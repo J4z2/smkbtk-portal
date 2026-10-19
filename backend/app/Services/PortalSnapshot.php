@@ -11,6 +11,8 @@ use App\Models\Assessment;
 use App\Models\AuditLog;
 use App\Models\FormSubject;
 use App\Models\Intervention;
+use App\Models\MeetingBooking;
+use App\Models\MeetingSlot;
 use App\Models\PrivacyNotice;
 use App\Models\Report;
 use App\Models\SchoolClass;
@@ -143,7 +145,7 @@ class PortalSnapshot
             ))->values(),
             'absenceRequests' => $this->absenceNotices($studentIds, $students),
             'announcements' => $this->announcements($user),
-            'meetings' => [],
+            ...$this->meetings($user, $studentIds, $students),
             'interventions' => $user->role->isStaff() ? $this->interventions($studentIds, $students) : [],
             'audit' => $user->isAdmin() ? $this->audit() : [],
             'consent' => [
@@ -351,6 +353,60 @@ class PortalSnapshot
             'document' => $n->document_path !== null,
             'status' => $n->status,
         ])->values()->all();
+    }
+
+    /**
+     * Upcoming slots for the user's classes, and bookings for their students.
+     *
+     * @param  array<int, int>  $studentIds
+     * @param  Collection<int, object>  $students
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    private function meetings(User $user, array $studentIds, Collection $students): array
+    {
+        $classCodes = $students->pluck('class_code')->filter()->unique();
+        $slots = MeetingSlot::query()
+            ->select(['meeting_slots.*', 'classes.code as class_code'])
+            ->join('classes', 'classes.id', '=', 'meeting_slots.class_id')
+            ->where('meeting_slots.date', '>=', now()->subDays(30)->toDateString())
+            ->when(! $user->isAdmin(), fn ($q) => $q->whereIn('classes.code', $classCodes)->where('classes.academic_year_id', AcademicYear::current()?->id))
+            ->withCount(['bookings as booked' => fn ($q) => $q->where('status', 'booked')])
+            ->orderBy('meeting_slots.date')->orderBy('meeting_slots.starts_at')
+            ->get();
+        $numbers = $students->pluck('student_no', 'id');
+        $bookings = MeetingBooking::query()
+            ->whereIn('meeting_slot_id', $slots->pluck('id'))
+            ->when($user->role === Role::Parent, fn ($q) => $q->whereIn('student_id', $studentIds))
+            ->with('student:id,name')
+            ->latest()->get();
+        $hm = fn ($t) => substr((string) $t, 0, 5);
+
+        return [
+            'meetingSlots' => $slots->map(fn ($s) => [
+                'apiId' => $s->id,
+                'classId' => $s->class_code,
+                'date' => $s->date->toDateString(),
+                'startsAt' => $hm($s->starts_at),
+                'endsAt' => $hm($s->ends_at),
+                'capacity' => $s->capacity,
+                'booked' => $s->booked,
+            ])->values()->all(),
+            'meetings' => $bookings->map(function ($b) use ($slots, $numbers, $hm) {
+                $slot = $slots->firstWhere('id', $b->meeting_slot_id);
+
+                return [
+                    'id' => 'MEET-'.$b->id,
+                    'apiId' => $b->id,
+                    'slotApiId' => $b->meeting_slot_id,
+                    'studentId' => $numbers[$b->student_id] ?? null,
+                    'studentName' => $b->student?->name ?? '',
+                    'topic' => $b->topic,
+                    'date' => $slot->date->toDateString(),
+                    'slot' => $hm($slot->starts_at).' – '.$hm($slot->ends_at),
+                    'status' => $b->status,
+                ];
+            })->values()->all(),
+        ];
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\AbsenceNotice;
+use App\Models\MeetingBooking;
+use App\Models\MeetingSlot;
 use App\Models\SchoolClass;
 use App\Services\Coex;
 use Illuminate\Support\Facades\Route;
@@ -26,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Route::bind('class', fn (string $id) => SchoolClass::findOrFail($id));
         Route::bind('notice', fn (string $id) => AbsenceNotice::findOrFail($id));
+        Route::bind('slot', fn (string $id) => MeetingSlot::findOrFail($id));
+        Route::bind('booking', fn (string $id) => MeetingBooking::findOrFail($id));
     }
 }

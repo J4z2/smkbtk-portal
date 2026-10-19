@@ -46,6 +46,11 @@ class AuditText
         'import.students' => 'Mengimport data pelajar.',
         'targets.updated' => 'Mengemas kini sasaran subjek.',
         'privacy_notice.published' => 'Menerbitkan notis privasi.',
+        'meeting.slot_created' => 'Membuka slot perjumpaan.',
+        'meeting.slot_deleted' => 'Memadam slot perjumpaan.',
+        'meeting.booked' => 'Menempah perjumpaan guru.',
+        'meeting.cancelled' => 'Membatalkan tempahan perjumpaan.',
+        'meeting.done' => 'Menandakan perjumpaan selesai.',
     ];
 
     public static function describe(AuditLog $log): string

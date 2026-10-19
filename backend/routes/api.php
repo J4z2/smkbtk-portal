@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BootstrapController;
 use App\Http\Controllers\Api\InterventionController;
+use App\Http\Controllers\Api\MeetingController;
 use App\Http\Controllers\Api\PortalController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StudentController;
@@ -60,6 +61,10 @@ Route::middleware('auth')->group(function () {
         Route::get('classes/{class}/attendance', [AttendanceController::class, 'classDay']);
         Route::put('classes/{class}/attendance', [AttendanceController::class, 'saveClassDay']);
         Route::post('classes/{class}/parent-accounts', [ParentAccountController::class, 'createForClass']);
+        Route::post('classes/{class}/meeting-slots', [MeetingController::class, 'storeSlot']);
+        Route::delete('meeting-slots/{slot}', [MeetingController::class, 'destroySlot']);
+        Route::post('meeting-slots/{slot}/book', [MeetingController::class, 'book']);
+        Route::patch('meeting-bookings/{booking}', [MeetingController::class, 'updateBooking']);
 
         Route::get('reports/{report}', [ReportController::class, 'show']);
         Route::patch('reports/{report}', [ReportController::class, 'update']);

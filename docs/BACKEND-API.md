@@ -32,6 +32,8 @@ Every endpoint below returns `403` with `code` = `password_change_required`, `co
 | GET | `/reports/{id}` | all | P: published only |
 | POST | `/reports/{id}/acknowledge` | P | "Sahkan telah dibaca" |
 | GET | `/announcements` | all | P: only those for all, their child's form or class |
+| POST | `/meeting-slots/{id}/book` | P | `{student_id, topic}`; slot must be for the child's class and not full |
+| PATCH | `/meeting-bookings/{id}` | P | `{status: cancelled}` for their own booking |
 | GET, POST | `/absence-notices` | P creates; all list | Optional `document` upload (PDF/JPG/PNG, 4 MB) |
 
 ## Class teacher (and admin)
@@ -47,6 +49,8 @@ Every endpoint below returns `403` with `code` = `password_change_required`, `co
 | PUT | `/students/{id}/targets` | `{targets: [{subject_id, target_mark}]}`; `null` removes a target |
 | GET | `/analytics/grades?subject_id=&assessment_key=&form=` | Grade counts and averages, overall and per form |
 | POST | `/classes/{id}/parent-accounts` | Logins for guardians without one; returns printable slips with one-time passwords |
+| POST, DELETE | `/classes/{id}/meeting-slots`, `/meeting-slots/{id}` | Open a slot `{date, starts_at, ends_at, capacity}`; delete only if nobody has booked |
+| PATCH | `/meeting-bookings/{id}` | `{status: done | cancelled}` |
 | POST | `/guardians/{id}/reset-password` | New one-time password (creates the login if missing) |
 
 ## Admin and super admin

@@ -1424,7 +1424,7 @@ function showAttendanceDay(studentId, date) {
 }
 function parentCommunicationHtml(s) {
   const p = currentParent();
-  const existing = data().meetings.filter((m) => m.parentId === p.id);
+  const existing = (data().meetings || []).filter((m) => m.studentId === s.id);
   return `<div class="section-title"><div><h2>Makluman & perjumpaan</h2><p>Pengumuman sekolah, tindakan yang perlu dibuat, dan tempahan slot guru.</p></div><button class="btn btn-primary no-print" onclick="openMeetingModal()">Tempah perjumpaan</button></div><div class="grid-2-1"><section class="panel"><div class="panel-head"><div><h3>Pengumuman sekolah</h3><p class="panel-sub">Makluman semasa yang diterbitkan kepada keluarga.</p></div></div><div class="list">${data()
     .announcements.map(
       (a) =>
@@ -1432,21 +1432,104 @@ function parentCommunicationHtml(s) {
     )
     .join(
       "",
-    )}</div></section><aside class="panel"><div class="panel-head"><div><h3>Perjumpaan saya</h3><p class="panel-sub">Slot yang anda telah tempah dengan guru.</p></div></div>${existing.length ? `<div class="list">${existing.map((m) => `<div class="item"><div class="item-icon">◷</div><div class="item-main"><strong>${esc(m.topic)}</strong><span>${fmtDate(m.date)} · ${esc(m.slot)}<br>Status: ${m.status === "booked" ? "Disahkan" : "Menunggu"}</span></div></div>`).join("")}</div>` : '<div class="empty-state">Belum ada perjumpaan yang ditempah.</div>'}</aside></div><section class="panel" style="margin-top:16px"><div class="panel-head"><div><h3>Hubungi sekolah</h3><p class="panel-sub">Gunakan saluran rasmi untuk pertanyaan berhubung anak anda.</p></div></div><div class="grid-3"><div class="role-box"><i>☎</i><div><strong>Pejabat sekolah</strong><span>${esc(data().school.phone || "Belum ditetapkan")}<br>${esc(data().school.officeHours || "")}</span></div></div><div class="role-box"><i>✉</i><div><strong>E-mel rasmi</strong><span>${esc(data().school.email || "Belum ditetapkan")}<br>Untuk pertanyaan bukan kecemasan.</span></div></div><div class="role-box"><i>◉</i><div><strong>Guru kelas</strong><span>Tempah slot melalui portal supaya rekod komunikasi tersusun.</span></div></div></div></section>`;
+    )}</div></section><aside class="panel"><div class="panel-head"><div><h3>Perjumpaan saya</h3><p class="panel-sub">Perjumpaan anak ini dengan guru kelas.</p></div></div>${existing.length ? `<div class="list">${existing.map((m) => `<div class="item"><div class="item-icon">◷</div><div class="item-main"><strong>${esc(m.topic)}</strong><span>${fmtDate(m.date)} · ${esc(m.slot)}<br>${meetingStatusPill(m.status)}</span></div>${m.status === "booked" ? `<button class="btn btn-ghost btn-sm" onclick="setBookingStatus(${Number(m.apiId)},'cancelled')">Batal</button>` : ""}</div>`).join("")}</div>` : '<div class="empty-state">Belum ada perjumpaan yang ditempah.</div>'}</aside></div><section class="panel" style="margin-top:16px"><div class="panel-head"><div><h3>Hubungi sekolah</h3><p class="panel-sub">Gunakan saluran rasmi untuk pertanyaan berhubung anak anda.</p></div></div><div class="grid-3"><div class="role-box"><i>☎</i><div><strong>Pejabat sekolah</strong><span>${esc(data().school.phone || "Belum ditetapkan")}<br>${esc(data().school.officeHours || "")}</span></div></div><div class="role-box"><i>✉</i><div><strong>E-mel rasmi</strong><span>${esc(data().school.email || "Belum ditetapkan")}<br>Untuk pertanyaan bukan kecemasan.</span></div></div><div class="role-box"><i>◉</i><div><strong>Guru kelas</strong><span>Tempah slot melalui portal supaya rekod komunikasi tersusun.</span></div></div></div></section>`;
 }
 function parentProfileHtml() {
   const p = currentParent(),
     children = parentStudents();
   return `<div class="section-title"><div><h2>Profil keluarga</h2><p>Maklumat penjaga yang dikaitkan dengan rekod pelajar di sekolah.</p></div></div><div class="grid-2"><section class="panel"><div class="panel-head"><div><h3>Maklumat penjaga utama</h3><p class="panel-sub">Untuk menukar maklumat ini, hubungi pejabat sekolah dengan dokumen sokongan.</p></div></div><div class="list"><div class="item"><div class="item-icon">◉</div><div class="item-main"><strong>Nama</strong><span>${esc(p?.name || "")}</span></div></div><div class="item"><div class="item-icon">☎</div><div class="item-main"><strong>Nombor telefon</strong><span>${esc(p?.phone || "Tiada")}</span></div></div><div class="item"><div class="item-icon">✉</div><div class="item-main"><strong>E-mel</strong><span>${esc(p?.email || "Tiada")}</span></div></div></div><button class="btn btn-outline" style="margin-top:16px" onclick="openPasswordModal(false)">Tukar kata laluan</button></section><section class="panel"><div class="panel-head"><div><h3>Anak yang dikaitkan</h3><p class="panel-sub">Akses anda hanya diberikan kepada pelajar yang dipautkan oleh sekolah.</p></div></div><div class="student-list">${children.map((s) => `<div class="student-row">${studentPhoto(s)}<div class="student-meta"><strong>${esc(s.name)}</strong><span>${esc(s.id)} · ${esc(className(s.classId))}</span></div>${statusPill(s.status)}</div>`).join("")}</div><div class="notice info" style="margin-top:16px"><strong>i</strong><div>Untuk tambah atau buang akses penjaga, hubungi pejabat sekolah dengan dokumen sokongan yang berkaitan.</div></div></section></div>`;
 }
-// Meeting bookings are not in the first release; show who to contact.
+// Parent–teacher meetings
+const MEETING_STATUS = {
+  booked: ["Ditempah", "green"],
+  cancelled: ["Dibatalkan", "gray"],
+  done: ["Selesai", "blue"],
+};
+function meetingStatusPill(status) {
+  const [label, tone] = MEETING_STATUS[status] || [status, "gray"];
+  return `<span class="pill ${tone}">${esc(label)}</span>`;
+}
+function openSlotsFor(classCode) {
+  const today = todayISO();
+  return (data().meetingSlots || []).filter(
+    (x) => x.classId === classCode && x.date >= today && x.booked < x.capacity,
+  );
+}
 function openMeetingModal() {
   const s = getStudent(selectedChildId),
-    teacher = classRecord(s?.classId).teacher,
-    phone = data().school.phone;
+    slots = openSlotsFor(s?.classId),
+    teacher = classRecord(s?.classId).teacher;
+  if (!slots.length) {
+    openModal(
+      "Tempah perjumpaan guru",
+      `<div class="notice info"><strong>i</strong><div>Tiada slot perjumpaan dibuka untuk ${esc(className(s?.classId))} buat masa ini. Sila hubungi ${teacher ? `guru kelas <strong>${esc(teacher)}</strong>` : "guru kelas"}${data().school.phone ? ` atau pejabat sekolah di <strong>${esc(data().school.phone)}</strong>` : ""}.</div></div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn btn-primary" onclick="closeModal()">Tutup</button></div>`,
+    );
+    return;
+  }
   openModal(
-    "Perjumpaan dengan guru",
-    `<div class="notice info"><strong>i</strong><div>Tempahan slot perjumpaan melalui portal akan dibuka tidak lama lagi. Buat masa ini, sila hubungi ${teacher ? `guru kelas <strong>${esc(teacher)}</strong>` : "guru kelas"}${phone ? ` atau pejabat sekolah di <strong>${esc(phone)}</strong>` : " atau pejabat sekolah"}.</div></div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn btn-primary" onclick="closeModal()">Tutup</button></div>`,
+    "Tempah perjumpaan guru",
+    `<form onsubmit="bookMeeting(event)"><div class="field"><label>Anak</label><input value="${esc(s.name)} · ${esc(className(s.classId))}" class="read-only" readonly></div><div class="field"><label>Topik perbincangan</label><select id="meeting-topic"><option>Perkembangan akademik</option><option>Kehadiran</option><option>Kokurikulum</option><option>Sokongan pembelajaran</option><option>Perkara lain</option></select></div><div class="field"><label>Slot</label><select id="meeting-slot" required>${slots.map((x) => `<option value="${Number(x.apiId)}">${fmtDate(x.date)} · ${esc(x.startsAt)}–${esc(x.endsAt)} (${x.capacity - x.booked} tempat)</option>`).join("")}</select></div><div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary">Sahkan tempahan</button></div></form>`,
+  );
+}
+async function bookMeeting(e) {
+  e.preventDefault();
+  const s = getStudent(selectedChildId);
+  const ok = await act(
+    () =>
+      api(
+        "POST",
+        `/meeting-slots/${document.getElementById("meeting-slot").value}/book`,
+        {
+          student_id: s.apiId,
+          topic: document.getElementById("meeting-topic").value,
+        },
+      ),
+    "Slot perjumpaan anda telah ditempah.",
+  );
+  if (ok) closeModal();
+}
+async function setBookingStatus(apiId, status) {
+  if (status === "cancelled" && !confirm("Batalkan tempahan ini?")) return;
+  await act(
+    () => api("PATCH", `/meeting-bookings/${Number(apiId)}`, { status }),
+    status === "done"
+      ? "Perjumpaan ditandakan selesai."
+      : "Tempahan telah dibatalkan.",
+  );
+}
+// Class teacher: open slots and see who booked.
+function meetingSlotsPanelHtml(code) {
+  const slots = (data().meetingSlots || []).filter(
+      (x) => x.classId === code && x.date >= todayISO(),
+    ),
+    bookings = data().meetings || [];
+  return `<section class="panel" style="margin-top:16px"><div class="panel-head"><div><h3>Perjumpaan ibu bapa</h3><p class="panel-sub">Buka slot untuk ${esc(className(code))}. Ibu bapa menempah melalui portal.</p></div></div><form class="filter-row" style="flex-wrap:wrap;gap:8px" onsubmit="saveMeetingSlot(event,'${code}')"><input id="slot-date" type="date" min="${todayISO()}" required aria-label="Tarikh"><input id="slot-start" type="time" value="09:00" required aria-label="Mula"><input id="slot-end" type="time" value="09:15" required aria-label="Tamat"><input id="slot-capacity" type="number" min="1" max="20" value="1" style="width:80px" aria-label="Kapasiti"><button class="btn btn-secondary btn-sm">+ Buka slot</button></form><div class="list" style="margin-top:12px">${
+    slots
+      .map((x) => {
+        const list = bookings.filter((b) => b.slotApiId === x.apiId);
+        return `<div class="item"><div class="item-icon">◷</div><div class="item-main"><strong>${fmtDate(x.date)} · ${esc(x.startsAt)}–${esc(x.endsAt)}</strong><span>${x.booked}/${x.capacity} ditempah${list.length ? "<br>" + list.map((b) => `${esc(b.studentName)} · ${esc(b.topic)} ${meetingStatusPill(b.status)}${b.status === "booked" ? ` <button class="btn btn-ghost btn-sm" onclick="setBookingStatus(${Number(b.apiId)},'done')">Selesai</button>` : ""}`).join("<br>") : ""}</span></div>${x.booked ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteMeetingSlot(${Number(x.apiId)})">Padam</button>`}</div>`;
+      })
+      .join("") || '<div class="empty-state">Belum ada slot dibuka.</div>'
+  }</div></section>`;
+}
+async function saveMeetingSlot(e, code) {
+  e.preventDefault();
+  await act(
+    () =>
+      api("POST", `/classes/${classApiId(code)}/meeting-slots`, {
+        date: document.getElementById("slot-date").value,
+        starts_at: document.getElementById("slot-start").value,
+        ends_at: document.getElementById("slot-end").value,
+        capacity: Number(document.getElementById("slot-capacity").value) || 1,
+      }),
+    "Slot perjumpaan dibuka.",
+  );
+}
+async function deleteMeetingSlot(apiId) {
+  if (!confirm("Padam slot ini?")) return;
+  await act(
+    () => api("DELETE", `/meeting-slots/${Number(apiId)}`),
+    "Slot dipadam.",
   );
 }
 
@@ -1610,7 +1693,7 @@ async function saveDailyAttendance(e) {
   );
 }
 function teacherStudentsHtml(t, students) {
-  return `<div class="section-title"><div><h2>Pelajar saya</h2><p>Senarai pelajar aktif dalam kelas yang ditugaskan kepada anda.</p></div>${t.classes[0] ? `<button class="btn btn-outline no-print" onclick="createParentAccounts('${t.classes[0]}')">Cipta akaun ibu bapa</button>` : ""}</div><section class="panel"><div class="panel-head"><div><h3>Carian dan status pelajar</h3><p class="panel-sub">Pilih pelajar untuk menyemak laporan dalam skop akses anda.</p></div><div class="filter-row"><input id="teacher-search" placeholder="Cari nama atau ID" oninput="filterStudentRows('teacher-roster',this.value)"><select onchange="filterTeacherClass(this.value)"><option value="">Semua kelas</option>${t.classes.map((c) => `<option value="${c}">${esc(className(c))}</option>`).join("")}</select></div></div><div class="student-list" id="teacher-roster">${students.map((s) => `<div class="student-row" data-search="${esc((s.name + " " + s.id + " " + s.classId).toLowerCase())}" data-class="${s.classId}">${studentPhoto(s)}<div class="student-meta"><strong>${esc(s.name)}</strong><span>${esc(s.id)} · ${esc(className(s.classId))} · Purata ${fmtPct(average(s))}</span></div>${statusPill(s.report.status)}<button class="btn btn-ghost btn-sm" onclick="resetGuardianPassword('${s.id}')">Kata laluan penjaga</button><button class="btn btn-outline btn-sm" onclick="selectTeacherStudent('${s.id}')">Rekod</button></div>`).join("")}</div></section>`;
+  return `<div class="section-title"><div><h2>Pelajar saya</h2><p>Senarai pelajar aktif dalam kelas yang ditugaskan kepada anda.</p></div>${t.classes[0] ? `<button class="btn btn-outline no-print" onclick="createParentAccounts('${t.classes[0]}')">Cipta akaun ibu bapa</button>` : ""}</div><section class="panel"><div class="panel-head"><div><h3>Carian dan status pelajar</h3><p class="panel-sub">Pilih pelajar untuk menyemak laporan dalam skop akses anda.</p></div><div class="filter-row"><input id="teacher-search" placeholder="Cari nama atau ID" oninput="filterStudentRows('teacher-roster',this.value)"><select onchange="filterTeacherClass(this.value)"><option value="">Semua kelas</option>${t.classes.map((c) => `<option value="${c}">${esc(className(c))}</option>`).join("")}</select></div></div><div class="student-list" id="teacher-roster">${students.map((s) => `<div class="student-row" data-search="${esc((s.name + " " + s.id + " " + s.classId).toLowerCase())}" data-class="${s.classId}">${studentPhoto(s)}<div class="student-meta"><strong>${esc(s.name)}</strong><span>${esc(s.id)} · ${esc(className(s.classId))} · Purata ${fmtPct(average(s))}</span></div>${statusPill(s.report.status)}<button class="btn btn-ghost btn-sm" onclick="resetGuardianPassword('${s.id}')">Kata laluan penjaga</button><button class="btn btn-outline btn-sm" onclick="selectTeacherStudent('${s.id}')">Rekod</button></div>`).join("")}</div></section>${t.classes[0] ? meetingSlotsPanelHtml(t.classes[0]) : ""}`;
 }
 function filterStudentRows(container, q) {
   q = q.toLowerCase();
