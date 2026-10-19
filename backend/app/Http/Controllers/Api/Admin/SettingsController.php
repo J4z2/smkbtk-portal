@@ -51,7 +51,7 @@ class SettingsController extends Controller
             'rules.*.gear' => ['required', 'integer', 'between:1,11'],
             'rules.*.min_mark' => ['required', 'integer', 'between:0,100'],
             'rules.*.max_mark' => ['required', 'integer', 'between:0,100'],
-            'rules.*.grade' => ['required', 'string', 'max:4'],
+            'rules.*.grade' => ['required', 'string', 'max:4', 'regex:/^[A-Za-z0-9+-]+$/'],
             'rules.*.zone' => ['required', 'string', 'max:60'],
             'rules.*.level' => ['required', 'string', 'max:60'],
             'rules.*.action_ms' => ['required', 'string', 'max:1000'],

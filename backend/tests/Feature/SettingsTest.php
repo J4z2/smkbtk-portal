@@ -30,6 +30,10 @@ class SettingsTest extends TestCase
         $this->getJson('/api/bootstrap')->assertJsonPath('coex.lms_pass_mark', 45);
 
         $rules = Coex::defaultRules();
+        $rules[0]['grade'] = '<b>';
+        $this->putJson('/api/admin/settings/coex', $this->payload(['rules' => $rules]))->assertStatus(422);
+
+        $rules = Coex::defaultRules();
         $rules[0]['max_mark'] = 30;
         $this->putJson('/api/admin/settings/coex', $this->payload(['rules' => $rules]))->assertStatus(422);
         $this->assertTrue(AuditLog::where('action', 'settings.coex_updated')->exists());
