@@ -559,6 +559,7 @@
     "Mata kokurikulum": "Co-curricular score",
     "Cadangan sokongan untuk keluarga": "Support suggestions for the family",
     "Simpan draf": "Save draft",
+    "Simpan sasaran": "Save targets",
     "Hantar untuk semakan": "Submit for review",
     "Checkpoint ini ditutup oleh pentadbir. Markah tidak boleh diubah.":
       "This checkpoint has been closed by an administrator. Marks cannot be changed.",
@@ -1344,6 +1345,11 @@
       "$1 subjects show falling Gears.",
     ],
     [/^(.+?): (.+)\.$/, "$1: $=2."],
+    [
+      /^Tukar kata laluan semasa log masuk pertama\. Laman: (.+)$/,
+      "Change your password at first login. Site: $=1",
+    ],
+    [/^\. Lajur pilihan: (.+)$/, ". Optional columns: $=1"],
     [/^Visual Tingkatan (\d)$/, "Form $1 view"],
     [/^Meter perkembangan Tingkatan (\d)$/, "Form $1 progress meter"],
     [/^Perkembangan awal Tingkatan (\d)$/, "Early Form $1 progress"],

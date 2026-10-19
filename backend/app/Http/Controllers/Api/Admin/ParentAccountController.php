@@ -9,6 +9,7 @@ use App\Models\Guardian;
 use App\Models\SchoolClass;
 use App\Models\User;
 use App\Support\Access;
+use App\Support\Identity;
 use App\Support\OneTimePassword;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -104,7 +105,7 @@ class ParentAccountController extends Controller
             'guardian' => $guardian->name,
             'students' => $guardian->students->pluck('name'),
             // What to type at login: IC first, then phone, then email.
-            'username' => $user->ic_encrypted ?? $user->phone ?? $user->email,
+            'username' => Identity::displayIc($user->ic_encrypted) ?? Identity::displayPhone($user->phone) ?? $user->email,
             'one_time_password' => $password,
         ];
     }

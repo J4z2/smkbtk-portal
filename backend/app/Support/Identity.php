@@ -30,6 +30,27 @@ class Identity
         return str_starts_with($digits, '0') ? '6'.$digits : $digits;
     }
 
+    /**
+     * Phone as people write it: 60123456789 → 012-3456789.
+     */
+    public static function displayPhone(?string $phone): ?string
+    {
+        if (! $phone) {
+            return $phone;
+        }
+        $local = str_starts_with($phone, '60') ? '0'.substr($phone, 2) : $phone;
+
+        return strlen($local) >= 10 ? substr($local, 0, 3).'-'.substr($local, 3) : $local;
+    }
+
+    /**
+     * MyKad as printed: 780808088888 → 780808-08-8888. Other IDs unchanged.
+     */
+    public static function displayIc(?string $ic): ?string
+    {
+        return $ic && preg_match('/^\d{12}$/', $ic) ? substr($ic, 0, 6).'-'.substr($ic, 6, 2).'-'.substr($ic, 8) : $ic;
+    }
+
     public static function hashIc(?string $ic): ?string
     {
         $value = self::normalizeIc($ic);

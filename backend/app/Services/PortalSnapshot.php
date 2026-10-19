@@ -20,6 +20,7 @@ use App\Models\Setting;
 use App\Models\Subject;
 use App\Models\User;
 use App\Support\Access;
+use App\Support\Identity;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -175,16 +176,17 @@ class PortalSnapshot
         $byKey = $reports->filter(fn ($r) => (int) $r->form === $form)->keyBy('key');
         $current = $byKey->get('trial');
         $marksOf = fn ($r) => $r ? ($marks[$r->id] ?? []) : [];
+        $map = fn (array $a) => $a ?: new \stdClass;
         $iso = fn ($v) => $v ? Carbon::parse($v)->toIso8601String() : null;
 
         // Parents only receive published reports; staff see all.
         $checkpoints = [];
         foreach (self::CHECKPOINT_KEYS as $key) {
             $r = $byKey->get($key);
-            $checkpoints[$key] = ['marks' => $marksOf($r), 'status' => $r?->status ?? 'draft', 'apiId' => $r?->id];
+            $checkpoints[$key] = ['marks' => $map($marksOf($r)), 'status' => $r?->status ?? 'draft', 'apiId' => $r?->id];
         }
         $checkpoints['target'] = [
-            'marks' => $targets->pluck('target_mark', 'name_ms')->all(),
+            'marks' => $map($targets->pluck('target_mark', 'name_ms')->all()),
             'status' => 'published',
         ];
 
@@ -206,14 +208,14 @@ class PortalSnapshot
             'guardianId' => $guardian ? 'G'.$guardian->id : null,
             'guardianApiId' => $guardian?->id,
             'guardian' => $guardian?->name ?? '',
-            'guardianPhone' => $guardian?->phone ?? '',
+            'guardianPhone' => Identity::displayPhone($guardian?->phone) ?? '',
             'photo' => '',
             'hasPhoto' => $s->photo_path !== null,
             'status' => $s->status === 'active' ? 'active' : 'archived',
             'gender' => $s->gender === 'P' ? 'Perempuan' : 'Lelaki',
-            'attendanceEntries' => $attendance->mapWithKeys(fn ($a) => [substr($a->date, 0, 10) => $a->status])->all(),
-            'attendanceNotes' => $attendance->filter(fn ($a) => $a->note)->mapWithKeys(fn ($a) => [substr($a->date, 0, 10) => $a->note])->all(),
-            'scores' => $scores,
+            'attendanceEntries' => $map($attendance->mapWithKeys(fn ($a) => [substr($a->date, 0, 10) => $a->status])->all()),
+            'attendanceNotes' => $map($attendance->filter(fn ($a) => $a->note)->mapWithKeys(fn ($a) => [substr($a->date, 0, 10) => $a->note])->all()),
+            'scores' => $map($scores),
             'co' => $current?->co_score ?? 0,
             'activities' => [],
             'comment' => $current?->teacher_comment ?? '',
@@ -303,7 +305,7 @@ class PortalSnapshot
      */
     private function accounts(User $user, Collection $classes): array
     {
-        $me = ['id' => 'U'.$user->id, 'apiId' => $user->id, 'name' => $user->name, 'email' => $user->email ?? '', 'phone' => $user->phone ?? ''];
+        $me = ['id' => 'U'.$user->id, 'apiId' => $user->id, 'name' => $user->name, 'email' => $user->email ?? '', 'phone' => Identity::displayPhone($user->phone) ?? ''];
         $teacherRow = fn (User $t) => [
             'id' => 'U'.$t->id,
             'apiId' => $t->id,

@@ -37,5 +37,9 @@ class CoexTest extends TestCase
         $this->assertSame('60123456789', Identity::normalizePhone('012-345 6789'));
         $this->assertSame('60123456789', Identity::normalizePhone('+60 12 345 6789'));
         $this->assertSame('800101011234', Identity::normalizeIc('800101-01-1234'));
+        $this->assertSame('012-3456789', Identity::displayPhone('60123456789'));
+        $this->assertSame('011-23456789', Identity::displayPhone('601123456789'));
+        $this->assertSame('780808-08-8888', Identity::displayIc('780808088888'));
+        $this->assertSame('A1234567', Identity::displayIc('A1234567'));
     }
 }

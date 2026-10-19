@@ -146,7 +146,7 @@ class StudentImporter
         }
         $icHash = Identity::hashIc($row['ic_penjaga'] ?? null);
         $phone = Identity::normalizePhone($row['telefon_penjaga'] ?? null);
-        $guardian = ($icHash ? Guardian::withTrashed()->where('ic_hash', $icHash)->first() : null)
+        $guardian = Guardian::findMatch($row['ic_penjaga'] ?? null, $row['telefon_penjaga'] ?? null, $name)
             ?? $student->guardians()->where('name', $name)->first()
             ?? new Guardian(['name' => $name]);
         $guardian->fill(array_filter([

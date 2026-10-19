@@ -29,6 +29,26 @@ class Guardian extends Model
         return $this;
     }
 
+    /**
+     * The existing guardian this person is, if any: same IC, or (when no
+     * IC is given) same phone and same name. Used so siblings share one
+     * guardian record and one login.
+     */
+    public static function findMatch(?string $ic, ?string $phone, ?string $name): ?self
+    {
+        if ($hash = Identity::hashIc($ic)) {
+            return static::where('ic_hash', $hash)->first();
+        }
+        $phone = Identity::normalizePhone($phone);
+        if (! $phone || ! $name) {
+            return null;
+        }
+
+        return static::where('phone', $phone)
+            ->get()
+            ->first(fn (self $g) => mb_strtolower(trim($g->name)) === mb_strtolower(trim($name)));
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

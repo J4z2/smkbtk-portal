@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Student;
 use App\Support\Access;
+use App\Support\Identity;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -46,7 +47,7 @@ class StudentResource extends JsonResource
                 'guardians' => $this->guardians->map(fn ($g) => [
                     'id' => $g->id,
                     'name' => $g->name,
-                    'phone' => $g->phone,
+                    'phone' => Identity::displayPhone($g->phone),
                     'email' => $g->email,
                     'relationship' => $g->pivot->relationship,
                     'is_primary' => (bool) $g->pivot->is_primary,

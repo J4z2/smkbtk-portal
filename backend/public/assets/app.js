@@ -99,8 +99,10 @@ async function api(method, path, body) {
     )
       ? json.message
       : null;
+  const message =
+    first || own || API_MESSAGES[res.status] || "Permintaan gagal.";
   throw new ApiError(
-    first || own || API_MESSAGES[res.status] || "Permintaan gagal.",
+    message.charAt(0).toUpperCase() + message.slice(1),
     res.status,
     json.code,
     json.errors,
@@ -1251,6 +1253,9 @@ async function logout() {
   currentUser = null;
   window.__smkData = null;
   closeModal();
+  // Shared school computers: don't leave the last login on screen.
+  document.getElementById("login-id").value = "";
+  document.getElementById("login-pass").value = "";
   document.getElementById("auth").classList.add("hidden");
   document.getElementById("dashboard").classList.add("hidden");
   document.getElementById("landing").classList.remove("hidden");
@@ -3173,7 +3178,7 @@ function teacherCoexHtml(t, students) {
     )
     .join(
       "",
-    )}</select></div></div><div class="coex-editor-row" style="font-weight:900;color:#38516c"><div>Mata pelajaran</div><div>Markah</div><div>Gred</div><div>Gear</div><div>Tindakan sistem</div></div>${rows}<div class="actions" style="justify-content:flex-end;margin-top:18px"><button class="btn btn-outline" onclick="saveTeacherCoex('draft')" ${isFinal ? "disabled" : ""}>Simpan draf</button><button class="btn btn-primary" onclick="saveTeacherCoex('submitted')" ${isFinal ? "disabled" : ""}>Hantar untuk semakan</button></div></section><aside><section class="coex-section" style="margin-top:0"><div class="coex-section-head"><div><h3>Pratonton automatik</h3><p>Dikemas kini semasa markah ditaip.</p></div></div><div class="coex-preview"><div class="preview-block"><span>Purata checkpoint</span><strong id="coex-preview-average">${fmtPct(coexAverage(s, cp))}</strong></div><div class="preview-block"><span>Gear keseluruhan</span><strong id="coex-preview-gear">${gearLabel(coexOverallRule(s, cp))}</strong></div><div class="preview-block"><span>${profile.lmsApplicable ? "Status LMS" : "Profil penilaian"}</span><strong id="coex-preview-lms" style="font-size:15px">${profile.lmsApplicable ? (lms.pending ? "—" : lms.eligible ? "LMS" : "TLMS") : profile.program}</strong></div><div class="preview-block"><span>Potensi digunakan</span><strong id="coex-preview-potential">${fmtPct(coexPotential(s, cp))}</strong></div></div></section><section class="coex-section"><div class="coex-section-head"><div><h3>Peraturan checkpoint</h3></div></div><div class="coex-alert ${isFinal ? "success" : ""}"><strong>${isFinal ? "✓" : "i"}</strong><div><strong>${isFinal ? "Checkpoint telah diterbitkan" : "Semakan diperlukan"}</strong><span>${isFinal ? "Markah dikunci untuk menjaga integriti rekod." : "Draf perlu dihantar dan diterbitkan oleh super admin sebelum menjadi rasmi kepada ibu bapa."}</span></div></div></section></aside></div>`;
+    )}</select></div></div><div class="coex-editor-row" style="font-weight:900;color:#38516c"><div>Mata pelajaran</div><div>Markah</div><div>Gred</div><div>Gear</div><div>Tindakan sistem</div></div>${rows}<div class="actions" style="justify-content:flex-end;margin-top:18px"><button class="btn btn-outline" onclick="saveTeacherCoex('draft')" ${isFinal ? "disabled" : ""}>${cp === "target" ? "Simpan sasaran" : "Simpan draf"}</button>${cp === "target" ? "" : `<button class="btn btn-primary" onclick="saveTeacherCoex('submitted')" ${isFinal ? "disabled" : ""}>Hantar untuk semakan</button>`}</div></section><aside><section class="coex-section" style="margin-top:0"><div class="coex-section-head"><div><h3>Pratonton automatik</h3><p>Dikemas kini semasa markah ditaip.</p></div></div><div class="coex-preview"><div class="preview-block"><span>Purata checkpoint</span><strong id="coex-preview-average">${fmtPct(coexAverage(s, cp))}</strong></div><div class="preview-block"><span>Gear keseluruhan</span><strong id="coex-preview-gear">${gearLabel(coexOverallRule(s, cp))}</strong></div><div class="preview-block"><span>${profile.lmsApplicable ? "Status LMS" : "Profil penilaian"}</span><strong id="coex-preview-lms" style="font-size:15px">${profile.lmsApplicable ? (lms.pending ? "—" : lms.eligible ? "LMS" : "TLMS") : profile.program}</strong></div><div class="preview-block"><span>Potensi digunakan</span><strong id="coex-preview-potential">${fmtPct(coexPotential(s, cp))}</strong></div></div></section><section class="coex-section"><div class="coex-section-head"><div><h3>Peraturan checkpoint</h3></div></div><div class="coex-alert ${isFinal ? "success" : ""}"><strong>${isFinal ? "✓" : "i"}</strong><div><strong>${isFinal ? "Checkpoint telah diterbitkan" : "Semakan diperlukan"}</strong><span>${isFinal ? "Markah dikunci untuk menjaga integriti rekod." : "Draf perlu dihantar dan diterbitkan oleh super admin sebelum menjadi rasmi kepada ibu bapa."}</span></div></div></section></aside></div>`;
 }
 // Marks typed in the editor. A blank box means "not entered".
 function teacherPreviewMarks() {

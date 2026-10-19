@@ -95,4 +95,23 @@ class SnapshotTest extends TestCase
         $students = collect($this->actingAs($this->teacherA)->getJson('/api/portal/snapshot')->json('students'))->keyBy('id');
         $this->assertSame(90, $students['S-A']['coex']['checkpoints']['target']['marks']['Bahasa Melayu']);
     }
+
+    public function test_sibling_without_ic_joins_the_same_guardian_by_phone_and_name(): void
+    {
+        $this->guardian->update(['phone' => '60123334444']);
+        $this->actingAs($this->admin)->postJson('/api/students', [
+            'name' => 'Adik Ali', 'gender' => 'L', 'class_id' => $this->classB->id,
+            'guardian_name' => 'ibu ali', 'guardian_phone' => '012-333 4444',
+        ])->assertCreated();
+
+        $this->assertSame(1, Guardian::count());
+        $this->actingAs($this->parent)->getJson('/api/students')->assertJsonCount(2, 'data');
+
+        // Same phone but a different name is a different person.
+        $this->actingAs($this->admin)->postJson('/api/students', [
+            'name' => 'Lain', 'gender' => 'L', 'class_id' => $this->classB->id,
+            'guardian_name' => 'Bapa Lain', 'guardian_phone' => '012-333 4444',
+        ])->assertCreated();
+        $this->assertSame(2, Guardian::count());
+    }
 }

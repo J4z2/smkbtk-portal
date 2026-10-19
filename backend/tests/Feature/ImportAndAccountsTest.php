@@ -59,7 +59,7 @@ class ImportAndAccountsTest extends TestCase
 
         $slips = $this->actingAs($this->teacherB)->postJson("/api/classes/{$this->classB->id}/parent-accounts")
             ->assertOk()->assertJsonPath('created', 1)->json('slips');
-        $this->assertSame('750202027777', $slips[0]['username']);
+        $this->assertSame('750202-02-7777', $slips[0]['username']);
 
         // Teacher A may not create accounts for class B.
         $this->actingAs($this->teacherA)->postJson("/api/classes/{$this->classB->id}/parent-accounts")->assertForbidden();

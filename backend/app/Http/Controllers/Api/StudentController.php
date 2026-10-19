@@ -155,7 +155,7 @@ class StudentController extends Controller
             return;
         }
         $icHash = Identity::hashIc($data['guardian_ic'] ?? null);
-        $guardian = ($icHash ? Guardian::where('ic_hash', $icHash)->first() : null)
+        $guardian = Guardian::findMatch($data['guardian_ic'] ?? null, $data['guardian_phone'] ?? null, $data['guardian_name'])
             ?? $student->guardians()->wherePivot('is_primary', true)->first()
             ?? new Guardian;
         $guardian->name = $data['guardian_name'];
