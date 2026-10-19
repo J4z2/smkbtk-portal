@@ -51,6 +51,8 @@ class AuditText
         'meeting.booked' => 'Menempah perjumpaan guru.',
         'meeting.cancelled' => 'Membatalkan tempahan perjumpaan.',
         'meeting.done' => 'Menandakan perjumpaan selesai.',
+        'retention.anonymised' => 'Menjadikan rekod murid yang telah lama keluar tanpa nama (PDPA).',
+        'user.created_by_console' => 'Mencipta akaun super admin melalui pelayan.',
     ];
 
     public static function describe(AuditLog $log): string
