@@ -67,3 +67,21 @@ Pages that scroll sideways on a phone: Parent "Metrik Prestasi Pelajar" (504 px 
 - **S1:** For marks 0–39, should the portal show one grade "G" (as in the presentation report) or "G1"/"G2"? Suggested: show "G", keep Gear 1 and 2 for colour and intervention.
 - **S2:** When a Form 4/5 student fails BM or Sejarah (TLMS), the portal counts **0 credits** even if they have A's in other subjects. Is that the intended rule?
 - **S3:** Form 4 checkpoint names: TOV, PPT, PAT (current code) or "Awal Tingkatan 4 / Pentaksiran Tingkatan 4 / Percubaan SPM" (current timeline)?
+
+## Fix status (20 October 2026)
+
+All **Fix now** items are fixed and were re-checked in the browser (every view, every demo account, desktop and 375 px):
+
+- A1 COEx settings save works, and rejects Gear ranges that overlap, leave gaps or do not cover 0–100.
+- A2 Teacher report no longer touches attendance; the % box is read-only and calculated from daily records.
+- A3 Current marks have one store (`s.scores`). The COEx "current" checkpoint reads it, and its status is the report status, so the report and COEx approval flows agree.
+- A4 Marks 0–39 show as "G" everywhere (S1 default) and are counted in analytics.
+- A5 Parents get a filtered copy of each child (`parentViewOf`): unpublished marks and checkpoints are removed before anything is drawn.
+- A6 Exam timeline built per form from the form's own checkpoint labels (S3 default: Form 4 uses TOV / PPT / Pentaksiran 2 / PAT). Dates editable for Forms 1–6; SPM for Form 5, STPM for Form 6.
+- A7, A8, A9, A10, A12 fixed as planned. Subject removal moves marks to `archivedScores`; re-adding the subject restores them.
+- B1–B3 No invented data: the trend graph plots only recorded averages, empty checkpoints show "—", and demo history is created only for the built-in demo students.
+- C2 Student IDs and class codes are validated; subject names are passed through `data-` attributes; photos must be PNG/JPEG data. C3 real name removed.
+- D2 Parent attendance has a month picker; D4 school contact details are edited by the super admin; D5 initials follow the signed-in user. Teacher daily attendance has a date picker (defaults to today).
+- E No page scrolls sideways at 375 px.
+
+S2 (no credits when TLMS) is unchanged pending the school's answer. Items marked **Backend** remain open.

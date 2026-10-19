@@ -33,13 +33,13 @@ Choose the corresponding role before signing in.
 
 | Role / coverage | Email | Password |
 | --- | --- | --- |
-| Parent, Tingkatan 5 | parent@smkseribestari.edu.my | parent123 |
-| Parent, Tingkatan 1–3 | parent.lower@smkseribestari.edu.my | parent123 |
-| Parent, Tingkatan 4 | parent.form4@smkseribestari.edu.my | parent123 |
-| Parent, Tingkatan 6 | parent.form6@smkseribestari.edu.my | parent123 |
-| Teacher | guru@smkseribestari.edu.my | guru123 |
-| Teacher, all forms | guru.demo@smkseribestari.edu.my | guru123 |
-| Super admin | admin@smkseribestari.edu.my | admin123 |
+| Parent, Tingkatan 5 | parent@smkbtk.com | parent123 |
+| Parent, Tingkatan 1–3 | parent.lower@smkbtk.com | parent123 |
+| Parent, Tingkatan 4 | parent.form4@smkbtk.com | parent123 |
+| Parent, Tingkatan 6 | parent.form6@smkbtk.com | parent123 |
+| Teacher | guru@smkbtk.com | guru123 |
+| Teacher, all forms | guru.demo@smkbtk.com | guru123 |
+| Super admin | admin@smkbtk.com | admin123 |
 
 The original parent fallback is also preserved: student ID `SMK2026-001`, password `1234`. These are built-in demo credentials, not production accounts.
 
@@ -60,10 +60,10 @@ Optional: the code was formatted with Prettier 3.6.2. The included settings pres
 
 ## Data and reset
 
-All changes stay in this browser's `localStorage`, under the original key `smk-seri-bestari-coex-v7-fixed`. They are not sent to a server or shared across devices. Login state is kept in memory, so sign in again after refreshing.
+All changes stay in this browser's `localStorage`, under the key `smk-btk-portal-v13` (data saved by v12 under its old key is not loaded). They are not sent to a server or shared across devices. Login state is kept in memory, so sign in again after refreshing.
 
 A different browser, profile, folder location or local hosting origin may have a different saved dataset. Renaming this storage key in `app.js` starts a separate demo dataset. Browsers can limit or clear storage for local files, and private browsing can discard saved changes.
 
-Use the prototype's **Reset demo** control to restore its seed records, then **reload the page** to restore the complete Tingkatan 1–6 migration. Export anything you want to keep before resetting. The existing JSON export is a snapshot; this prototype does not include JSON restore. Its separate CSV import adds student records.
+Use the prototype's **Reset demo** control to restore its seed records, then **reload the page** to restore the complete Tingkatan 1–6 migration. Export anything you want to keep before resetting. The existing JSON export is a snapshot; this prototype does not include JSON restore. Its separate CSV import adds student records and lists any rows it skipped.
 
 This is a frontend demonstration with browser-only login and storage. Backend services, real authentication, multi-user synchronisation and production PDF generation are outside this package. See [prototype notes](docs/PROTOTYPE-NOTES.md) for the original limitations retained during extraction and [verification](docs/VERIFICATION.md) for the checks performed.
