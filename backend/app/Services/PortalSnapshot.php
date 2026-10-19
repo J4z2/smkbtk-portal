@@ -131,6 +131,10 @@ class PortalSnapshot
                 'assessments' => $assessments->map->only(['id', 'form', 'key', 'name_ms', 'is_open', 'is_current'])->values(),
             ],
             'coexSettings' => $this->coexSettings(),
+            // Malay → English names for the language switch.
+            'translations' => Subject::pluck('name_en', 'name_ms')
+                ->merge($assessments->pluck('name_en', 'name_ms'))
+                ->filter(fn ($en, $ms) => $en && $en !== $ms),
             'accounts' => $this->accounts($user, $classes),
             'students' => $students->map(fn ($s) => $this->student(
                 $s,

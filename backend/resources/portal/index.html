@@ -20,6 +20,11 @@
           ><div class="site-links"
             ><a href="#fungsi">Fungsi</a><a href="#cara">Cara guna</a
             ><a href="#hubungi">Hubungi</a
+            ><button
+              class="btn btn-ghost btn-sm lang-toggle"
+              data-lang-toggle
+              onclick="toggleLang()"
+              >EN</button
             ><button class="btn btn-primary" onclick="openAuth('parent')"
               >Log masuk portal</button
             ></div
@@ -238,6 +243,12 @@
               >Masuk sebagai ibu bapa</button
             ></form
           ><div class="demo-box" id="demo-creds" role="note"></div
+          ><button
+            class="btn btn-ghost btn-sm lang-toggle"
+            data-lang-toggle
+            onclick="toggleLang()"
+            style="margin-top:12px"
+            >EN</button
           ><a class="back-home" href="#" onclick="backHome(event)"
             >← Kembali ke laman sekolah</a
           ></div
@@ -353,6 +364,11 @@
               id="top-action"
               onclick="topAction()"
               >Cetak laporan</button
+            ><button
+              class="btn btn-ghost btn-sm lang-toggle no-print"
+              data-lang-toggle
+              onclick="toggleLang()"
+              >EN</button
             ><div class="profile"
               ><div class="avatar" id="profile-avatar">PN</div
               ><div class="profile-copy"
@@ -388,6 +404,7 @@
     </section>
     <div id="modal-root"></div><div class="toast" id="toast"></div>
 
+    <script src="/assets/i18n.js?v=__ASSET_VERSION__"></script>
     <script src="/assets/app.js?v=__ASSET_VERSION__"></script>
   </body>
 </html>

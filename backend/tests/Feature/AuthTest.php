@@ -76,4 +76,10 @@ class AuthTest extends TestCase
     {
         $this->getJson('/api/bootstrap')->assertStatus(401);
     }
+
+    public function test_validation_messages_follow_the_chosen_language(): void
+    {
+        $this->postJson('/api/login', [], ['X-Locale' => 'ms'])->assertStatus(422)->assertJsonPath('errors.login.0', 'nama pengguna diperlukan.');
+        $this->postJson('/api/login', [], ['X-Locale' => 'en'])->assertStatus(422)->assertJsonPath('errors.login.0', 'The login field is required.');
+    }
 }

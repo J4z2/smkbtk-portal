@@ -1,6 +1,6 @@
 # SMK Bandar Tasik Kesuma: student performance portal
 
-A portal for parents, class teachers and school administrators: academic reports with COEx grades and Gears, daily attendance, absence notices, interventions, analytics and school administration. Interface in Bahasa Melayu.
+A portal for parents, class teachers and school administrators: academic reports with COEx grades and Gears, daily attendance, absence notices, interventions, analytics and school administration. Interface in Bahasa Melayu, with an English switch (BM/EN button).
 
 The app is a Laravel 13 + MySQL backend that also serves the portal page:
 
@@ -10,6 +10,7 @@ smk-bandar-tasik-kesuma-portal-v12/
 │   ├── resources/portal/index.html  The portal page
 │   ├── public/assets/app.js         Portal screens and logic (talks to /api)
 │   ├── public/assets/styles.css     Portal styles
+│   ├── public/assets/i18n.js        English switch (phrase dictionary)
 │   ├── app/, routes/, database/     API, access rules, schema, seeders
 │   └── tests/                       Feature and unit tests
 └── docs/                            Schema, API, audit, PDPA notice draft
@@ -42,6 +43,8 @@ Open http://127.0.0.1:8000. The demo logins are listed in [backend/README.md](ba
 ## How it works
 
 After login the page loads one snapshot (`/api/portal/snapshot`) that contains only what that user may see: parents get their own children's published reports, class teachers their own class, admins the whole school. Every change goes to its API endpoint; the server checks permissions, saves to MySQL, writes the audit log, and the page reloads the snapshot.
+
+**Language:** the screens are written in Malay. The BM/EN button switches to English by translating text as it appears, using the dictionary in `public/assets/i18n.js`; anything without a translation stays in Malay. To translate new text, add the Malay phrase and its English to `PHRASES` there (or a rule to `PATTERNS` for text with numbers or names). Server validation messages follow the chosen language.
 
 There is no email at launch. Accounts are handed out on printed slips with one-time passwords that must be changed at first login. Parents can log in with their IC number, phone number or email.
 
