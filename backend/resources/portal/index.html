@@ -1,525 +1,393 @@
 <!doctype html>
 <html lang="ms">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#113f75" />
-        <title>SMK Bandar Tasik Kesuma | Portal Keluarga & Pentadbiran</title>
-        <link rel="stylesheet" href="/assets/styles.css?v=__ASSET_VERSION__" />
-    </head>
-    <body>
-        <section id="landing">
-            <header class="site-header"
-                ><nav class="site-nav"
-                    ><div class="brand"
-                        ><div class="crest">SMK</div
-                        ><div
-                            ><strong>SMK Bandar Tasik Kesuma</strong
-                            ><span>Portal Keluarga & Pentadbiran</span></div
-                        ></div
-                    ><div class="site-links"
-                        ><a href="#fungsi">Fungsi</a
-                        ><a href="#cara">Cara guna</a
-                        ><a href="#hubungi">Hubungi</a
-                        ><button
-                            class="btn btn-primary"
-                            onclick="openAuth('parent')"
-                            >Log masuk portal</button
-                        ></div
-                    ></nav
-                ></header
-            >
-            <main>
-                <section class="hero"
-                    ><div
-                        ><div class="eyebrow"
-                            ><i></i> Sistem sekolah yang jelas untuk
-                            keluarga</div
-                        ><h1
-                            >Perkembangan anak anda, dalam satu paparan yang
-                            mudah.</h1
-                        ><p
-                            >Semak laporan akademik, kehadiran, kokurikulum,
-                            makluman sekolah, dan ulasan guru melalui portal
-                            yang direka untuk ibu bapa, guru, dan pentadbir
-                            sekolah.</p
-                        ><div class="hero-actions"
-                            ><button
-                                class="btn btn-primary"
-                                onclick="openAuth('parent')"
-                                >Akses portal ibu bapa</button
-                            ><button
-                                class="btn btn-outline"
-                                onclick="openAuth('teacher')"
-                                >Log masuk guru</button
-                            ></div
-                        ><div class="hero-points"
-                            ><div
-                                ><strong>1 akaun</strong
-                                ><span
-                                    >Untuk lebih daripada seorang anak</span
-                                ></div
-                            ><div
-                                ><strong>3 peranan</strong
-                                ><span>Ibu bapa, guru, pentadbir</span></div
-                            ><div
-                                ><strong>1 rekod</strong
-                                ><span>Akademik hingga kehadiran</span></div
-                            ></div
-                        ></div
-                    ><div class="hero-card"
-                        ><div class="float-card top"
-                            ><div class="mini-title"
-                                >COEx & Gear Up telah dikemas kini</div
-                            ><div class="mini-big">Gear 9 · A-</div
-                            ><div class="mini-line blue"></div
-                            ><div class="mini-line gold"></div></div
-                        ><div class="float-card bottom"
-                            ><div class="mini-title">Kehadiran bulan ini</div
-                            ><div class="mini-big" style="color:var(--green)"
-                                >94%</div
-                            ><div class="mini-line blue"></div></div
-                        ><div class="school-illus"
-                            ><div class="roof"></div><div class="flag"></div
-                            ><div class="windows"
-                                ><span></span><span></span><span></span
-                                ><span></span><span></span
-                                ><span></span></div></div></div
-                ></section>
-                <section class="section" id="fungsi"
-                    ><div class="section-head"
-                        ><div
-                            ><h2>Semua perkara penting, tersusun.</h2
-                            ><p
-                                >Portal ini menjadikan rekod sekolah lebih mudah
-                                dicapai tanpa membebankan ibu bapa atau guru
-                                dengan proses yang rumit.</p
-                            ></div
-                        ></div
-                    ><div class="feature-grid"
-                        ><article class="feature"
-                            ><div class="feature-icon">▦</div
-                            ><h3>Dashboard prestasi anak</h3
-                            ><p
-                                >Lihat markah, COEx warna, Gear 1 hingga 11,
-                                anjakan prestasi, sasaran akademik mengikut
-                                tingkatan, kehadiran, dan tindakan sokongan
-                                dalam satu pandangan.</p
-                            ></article
-                        ><article class="feature"
-                            ><div class="feature-icon">⚙</div
-                            ><h3>COEx & Gear Up</h3
-                            ><p
-                                >Terjemahkan setiap markah kepada gred, warna,
-                                Gear, zon tindakan, kredit, ganjaran dan
-                                intervensi. LMS dipaparkan khusus untuk
-                                Tingkatan 4 dan 5.</p
-                            ></article
-                        ><article class="feature"
-                            ><div class="feature-icon">✓</div
-                            ><h3>Laporan rasmi berstatus</h3
-                            ><p
-                                >Guru menyimpan draf, menghantar untuk semakan,
-                                dan pentadbir meluluskan sebelum ibu bapa
-                                melihat laporan.</p
-                            ></article
-                        ><article class="feature"
-                            ><div class="feature-icon">◷</div
-                            ><h3>Kehadiran harian</h3
-                            ><p
-                                >Lihat rekod mengikut hari, sebab
-                                ketidakhadiran, trend bulanan, serta hantar
-                                makluman kepada sekolah.</p
-                            ></article
-                        ><article class="feature"
-                            ><div class="feature-icon">◎</div
-                            ><h3>Komunikasi keluarga</h3
-                            ><p
-                                >Terima pengumuman, tempah slot perjumpaan guru,
-                                dan hantar permohonan berkaitan kehadiran.</p
-                            ></article
-                        ><article class="feature"
-                            ><div class="feature-icon">♙</div
-                            ><h3>Akses ikut peranan</h3
-                            ><p
-                                >Guru hanya mengemas kini kelas dan subjek yang
-                                ditugaskan. Pentadbir mengawal pelajar, akses,
-                                dan kelulusan.</p
-                            ></article
-                        ><article class="feature"
-                            ><div class="feature-icon">⌁</div
-                            ><h3>Rekod operasi sekolah</h3
-                            ><p
-                                >Urus pelajar aktif, pindah kelas, arkib
-                                pelajar, foto pasport, audit aktiviti, dan data
-                                master sekolah.</p
-                            ></article
-                        ></div
-                    ></section
-                >
-                <section class="steps" id="cara"
-                    ><div class="section"
-                        ><div class="section-head"
-                            ><div
-                                ><h2>Aliran penggunaan portal</h2
-                                ><p
-                                    >Setiap pihak hanya melakukan tindakan yang
-                                    berkaitan dengan peranan mereka.</p
-                                ></div
-                            ></div
-                        ><div class="step-grid"
-                            ><article class="step"
-                                ><div class="step-no">1</div
-                                ><h3>Admin mendaftar pelajar</h3
-                                ><p
-                                    >Masukkan profil, kelas, penjaga, foto
-                                    pasport, dan status pelajar.</p
-                                ></article
-                            ><article class="step"
-                                ><div class="step-no">2</div
-                                ><h3>Guru merekod prestasi</h3
-                                ><p
-                                    >Kemas kini subjek, kehadiran, ulasan kelas,
-                                    serta aktiviti berkaitan.</p
-                                ></article
-                            ><article class="step"
-                                ><div class="step-no">3</div
-                                ><h3>Pentadbir meluluskan</h3
-                                ><p
-                                    >Semak laporan yang dihantar sebelum
-                                    diterbitkan kepada keluarga.</p
-                                ></article
-                            ><article class="step"
-                                ><div class="step-no">4</div
-                                ><h3>Ibu bapa menerima makluman</h3
-                                ><p
-                                    >Semak data, laporan rasmi, kehadiran, dan
-                                    komunikasi sekolah dalam satu akaun.</p
-                                ></article
-                            ></div
-                        ></div
-                    ></section
-                >
-                <section class="landing-cta"
-                    ><div
-                        ><div
-                            ><h2
-                                >Portal sekolah yang bermula dengan rekod paling
-                                penting.</h2
-                            ><p
-                                >Ibu bapa menerima nama pengguna dan kata laluan
-                                sementara daripada guru kelas.</p
-                            ></div
-                        ><button
-                            class="btn btn-primary"
-                            onclick="openAuth('parent')"
-                            >Log masuk portal</button
-                        ></div
-                    ></section
-                >
-            </main>
-            <footer class="footer" id="hubungi"
-                ><div
-                    ><div
-                        ><strong>SMK Bandar Tasik Kesuma</strong
-                        ><p id="footer-contact"></p></div
-                    ><span style="font-size:12px"
-                        >© 2026 Portal Keluarga & Pentadbiran</span
-                    ></div
-                ></footer
-            >
-        </section>
-
-        <section id="auth" class="hidden"
-            ><div class="auth-wrap"
-                ><div class="auth-card"
-                    ><div class="auth-top"
-                        ><div class="crest">SMK</div
-                        ><h2 id="auth-title">Log masuk ibu bapa</h2
-                        ><p id="auth-desc"
-                            >Akses laporan dan rekod sekolah anak anda.</p
-                        ></div
-                    ><div class="role-tabs"
-                        ><button
-                            class="role-tab active"
-                            data-role="parent"
-                            onclick="switchRole('parent')"
-                            >Ibu bapa</button
-                        ><button
-                            class="role-tab"
-                            data-role="teacher"
-                            onclick="switchRole('teacher')"
-                            >Guru</button
-                        ><button
-                            class="role-tab"
-                            data-role="super"
-                            onclick="switchRole('super')"
-                            >Pentadbir</button
-                        ></div
-                    ><form onsubmit="handleLogin(event)"
-                        ><div class="field"
-                            ><label id="login-label"
-                                >E-mel, no. telefon atau no. kad
-                                pengenalan</label
-                            ><input
-                                id="login-id"
-                                autocomplete="username"
-                                required /></div
-                        ><div class="field"
-                            ><label>Kata laluan</label
-                            ><input
-                                id="login-pass"
-                                type="password"
-                                autocomplete="current-password"
-                                required /></div
-                        ><button
-                            class="btn btn-primary"
-                            style="width:100%;margin-top:20px"
-                            id="login-button"
-                            type="submit"
-                            >Masuk sebagai ibu bapa</button
-                        ></form
-                    ><div class="demo-box" id="demo-creds" role="note"></div
-                    ><a class="back-home" href="#" onclick="backHome(event)"
-                        >← Kembali ke laman sekolah</a
-                    ></div
-                ></div
-            ></section
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#113f75" />
+    <title>SMK Bandar Tasik Kesuma | Portal Keluarga & Pentadbiran</title>
+    <link rel="stylesheet" href="/assets/styles.css?v=__ASSET_VERSION__" />
+  </head>
+  <body>
+    <section id="landing">
+      <header class="site-header"
+        ><nav class="site-nav"
+          ><div class="brand"
+            ><div class="crest">SMK</div
+            ><div
+              ><strong>SMK Bandar Tasik Kesuma</strong
+              ><span>Portal Keluarga & Pentadbiran</span></div
+            ></div
+          ><div class="site-links"
+            ><a href="#fungsi">Fungsi</a><a href="#cara">Cara guna</a
+            ><a href="#hubungi">Hubungi</a
+            ><button class="btn btn-primary" onclick="openAuth('parent')"
+              >Log masuk portal</button
+            ></div
+          ></nav
+        ></header
+      >
+      <main>
+        <section class="hero"
+          ><div
+            ><div class="eyebrow"
+              ><i></i> Sistem sekolah yang jelas untuk keluarga</div
+            ><h1>Perkembangan anak anda, dalam satu paparan yang mudah.</h1
+            ><p
+              >Semak laporan akademik, kehadiran, kokurikulum, makluman sekolah,
+              dan ulasan guru melalui portal yang direka untuk ibu bapa, guru,
+              dan pentadbir sekolah.</p
+            ><div class="hero-actions"
+              ><button class="btn btn-primary" onclick="openAuth('parent')"
+                >Akses portal ibu bapa</button
+              ><button class="btn btn-outline" onclick="openAuth('teacher')"
+                >Log masuk guru</button
+              ></div
+            ><div class="hero-points"
+              ><div
+                ><strong>1 akaun</strong
+                ><span>Untuk lebih daripada seorang anak</span></div
+              ><div
+                ><strong>3 peranan</strong
+                ><span>Ibu bapa, guru, pentadbir</span></div
+              ><div
+                ><strong>1 rekod</strong
+                ><span>Akademik hingga kehadiran</span></div
+              ></div
+            ></div
+          ><div class="hero-card"
+            ><div class="float-card top"
+              ><div class="mini-title">COEx & Gear Up telah dikemas kini</div
+              ><div class="mini-big">Gear 9 · A-</div
+              ><div class="mini-line blue"></div
+              ><div class="mini-line gold"></div></div
+            ><div class="float-card bottom"
+              ><div class="mini-title">Kehadiran bulan ini</div
+              ><div class="mini-big" style="color:var(--green)">94%</div
+              ><div class="mini-line blue"></div></div
+            ><div class="school-illus"
+              ><div class="roof"></div><div class="flag"></div
+              ><div class="windows"
+                ><span></span><span></span><span></span><span></span
+                ><span></span><span></span></div></div></div
+        ></section>
+        <section class="section" id="fungsi"
+          ><div class="section-head"
+            ><div
+              ><h2>Semua perkara penting, tersusun.</h2
+              ><p
+                >Portal ini menjadikan rekod sekolah lebih mudah dicapai tanpa
+                membebankan ibu bapa atau guru dengan proses yang rumit.</p
+              ></div
+            ></div
+          ><div class="feature-grid"
+            ><article class="feature"
+              ><div class="feature-icon">▦</div><h3>Dashboard prestasi anak</h3
+              ><p
+                >Lihat markah, COEx warna, Gear 1 hingga 11, anjakan prestasi,
+                sasaran akademik mengikut tingkatan, kehadiran, dan tindakan
+                sokongan dalam satu pandangan.</p
+              ></article
+            ><article class="feature"
+              ><div class="feature-icon">⚙</div><h3>COEx & Gear Up</h3
+              ><p
+                >Terjemahkan setiap markah kepada gred, warna, Gear, zon
+                tindakan, kredit, ganjaran dan intervensi. LMS dipaparkan khusus
+                untuk Tingkatan 4 dan 5.</p
+              ></article
+            ><article class="feature"
+              ><div class="feature-icon">✓</div><h3>Laporan rasmi berstatus</h3
+              ><p
+                >Guru menyimpan draf, menghantar untuk semakan, dan pentadbir
+                meluluskan sebelum ibu bapa melihat laporan.</p
+              ></article
+            ><article class="feature"
+              ><div class="feature-icon">◷</div><h3>Kehadiran harian</h3
+              ><p
+                >Lihat rekod mengikut hari, sebab ketidakhadiran, trend bulanan,
+                serta hantar makluman kepada sekolah.</p
+              ></article
+            ><article class="feature"
+              ><div class="feature-icon">◎</div><h3>Komunikasi keluarga</h3
+              ><p
+                >Terima pengumuman, tempah slot perjumpaan guru, dan hantar
+                permohonan berkaitan kehadiran.</p
+              ></article
+            ><article class="feature"
+              ><div class="feature-icon">♙</div><h3>Akses ikut peranan</h3
+              ><p
+                >Guru hanya mengemas kini kelas dan subjek yang ditugaskan.
+                Pentadbir mengawal pelajar, akses, dan kelulusan.</p
+              ></article
+            ><article class="feature"
+              ><div class="feature-icon">⌁</div><h3>Rekod operasi sekolah</h3
+              ><p
+                >Urus pelajar aktif, pindah kelas, arkib pelajar, foto pasport,
+                audit aktiviti, dan data master sekolah.</p
+              ></article
+            ></div
+          ></section
         >
+        <section class="steps" id="cara"
+          ><div class="section"
+            ><div class="section-head"
+              ><div
+                ><h2>Aliran penggunaan portal</h2
+                ><p
+                  >Setiap pihak hanya melakukan tindakan yang berkaitan dengan
+                  peranan mereka.</p
+                ></div
+              ></div
+            ><div class="step-grid"
+              ><article class="step"
+                ><div class="step-no">1</div><h3>Admin mendaftar pelajar</h3
+                ><p
+                  >Masukkan profil, kelas, penjaga, foto pasport, dan status
+                  pelajar.</p
+                ></article
+              ><article class="step"
+                ><div class="step-no">2</div><h3>Guru merekod prestasi</h3
+                ><p
+                  >Kemas kini subjek, kehadiran, ulasan kelas, serta aktiviti
+                  berkaitan.</p
+                ></article
+              ><article class="step"
+                ><div class="step-no">3</div><h3>Pentadbir meluluskan</h3
+                ><p
+                  >Semak laporan yang dihantar sebelum diterbitkan kepada
+                  keluarga.</p
+                ></article
+              ><article class="step"
+                ><div class="step-no">4</div><h3>Ibu bapa menerima makluman</h3
+                ><p
+                  >Semak data, laporan rasmi, kehadiran, dan komunikasi sekolah
+                  dalam satu akaun.</p
+                ></article
+              ></div
+            ></div
+          ></section
+        >
+        <section class="landing-cta"
+          ><div
+            ><div
+              ><h2>Portal sekolah yang bermula dengan rekod paling penting.</h2
+              ><p
+                >Ibu bapa menerima nama pengguna dan kata laluan sementara
+                daripada guru kelas.</p
+              ></div
+            ><button class="btn btn-primary" onclick="openAuth('parent')"
+              >Log masuk portal</button
+            ></div
+          ></section
+        >
+      </main>
+      <footer class="footer" id="hubungi"
+        ><div
+          ><div
+            ><strong>SMK Bandar Tasik Kesuma</strong
+            ><p id="footer-contact"></p></div
+          ><span style="font-size:12px"
+            >© 2026 Portal Keluarga & Pentadbiran</span
+          ></div
+        ></footer
+      >
+    </section>
 
-        <section id="dashboard" class="dash hidden">
-            <aside class="sidebar" id="sidebar"
-                ><div class="dash-brand"
-                    ><div class="crest">SMK</div
-                    ><div class="brand-copy"
-                        ><strong>SMK Bandar Tasik Kesuma</strong
-                        ><span>Portal Pengurusan</span></div
-                    ></div
-                >
-                <div id="nav-parent" class="nav-set hidden"
-                    ><div class="nav-label">Ibu Bapa</div
-                    ><a
-                        href="#"
-                        class="nav-link active"
-                        onclick="setView('parent-home',this)"
-                        ><i class="nav-icon">⌂</i><span>Dashboard anak</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('parent-report',this)"
-                        ><i class="nav-icon">▦</i
-                        ><span>Laporan akademik</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('parent-coex',this)"
-                        ><i class="nav-icon">⚙</i
-                        ><span>Metrik Prestasi Pelajar</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('parent-attendance',this)"
-                        ><i class="nav-icon">◷</i><span>Kehadiran</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('parent-communication',this)"
-                        ><i class="nav-icon">✉</i
-                        ><span>Makluman & perjumpaan</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('parent-profile',this)"
-                        ><i class="nav-icon">◉</i
-                        ><span>Profil keluarga</span></a
-                    ></div
-                >
-                <div id="nav-teacher" class="nav-set hidden"
-                    ><div class="nav-label">Guru</div
-                    ><a
-                        href="#"
-                        class="nav-link active"
-                        onclick="setView('teacher-home',this)"
-                        ><i class="nav-icon">⌂</i
-                        ><span>Ringkasan kelas</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('teacher-report',this)"
-                        ><i class="nav-icon">✎</i><span>Rekod laporan</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('teacher-coex',this)"
-                        ><i class="nav-icon">⚙</i
-                        ><span>Rekod Prestasi Pelajar</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('teacher-attendance',this)"
-                        ><i class="nav-icon">◷</i
-                        ><span>Kehadiran harian</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('teacher-students',this)"
-                        ><i class="nav-icon">♙</i><span>Pelajar saya</span></a
-                    ></div
-                >
-                <div id="nav-super" class="nav-set hidden"
-                    ><div class="nav-label">Super Admin</div
-                    ><a
-                        href="#"
-                        class="nav-link active"
-                        onclick="setView('super-home',this)"
-                        ><i class="nav-icon">⌂</i
-                        ><span>Operasi sekolah</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('super-approvals',this)"
-                        ><i class="nav-icon">✓</i
-                        ><span>Kelulusan laporan</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('super-students',this)"
-                        ><i class="nav-icon">♙</i
-                        ><span>Pelajar & penjaga</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('super-teachers',this)"
-                        ><i class="nav-icon">◫</i><span>Akses guru</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('super-master',this)"
-                        ><i class="nav-icon">⚙</i><span>Data sekolah</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('super-audit',this)"
-                        ><i class="nav-icon">⌁</i
-                        ><span>Audit & privasi</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('super-coex',this)"
-                        ><i class="nav-icon">⚙</i><span>Tetapan COEx</span></a
-                    ><a
-                        href="#"
-                        class="nav-link"
-                        onclick="setView('super-interventions',this)"
-                        ><i class="nav-icon">◎</i
-                        ><span>Intervensi murid</span></a
-                    ></div
-                >
-                <div class="sidebar-bottom"
-                    ><div class="term-card" id="term-card"
-                        ><strong>Sesi Akademik 2026</strong>Penggal 1</div
-                    ><button class="btn" onclick="logout()"
-                        >↪ <span>Log keluar</span></button
-                    ></div
-                >
-            </aside>
-            <main class="main"
-                ><header class="topbar"
-                    ><button
-                        class="mobile-menu no-print"
-                        onclick="toggleSidebar()"
-                        >☰</button
-                    ><div
-                        ><div class="crumb" id="crumb">Portal</div
-                        ><h1 id="page-title">Dashboard</h1></div
-                    ><div class="top-actions"
-                        ><span class="pill green" id="role-pill"
-                            >Portal ibu bapa</span
-                        ><button
-                            class="btn btn-outline btn-sm no-print"
-                            id="top-action"
-                            onclick="topAction()"
-                            >Cetak laporan</button
-                        ><div class="profile"
-                            ><div class="avatar" id="profile-avatar">PN</div
-                            ><div class="profile-copy"
-                                ><strong id="profile-name">Puan Noraini</strong
-                                ><span id="profile-role">Ibu bapa</span></div
-                            ></div
-                        ></div
-                    ></header
-                ><div class="page">
-                    <section class="view" id="view-parent-home"></section>
-                    <section
-                        class="view hidden"
-                        id="view-parent-report"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-parent-coex"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-parent-attendance"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-parent-communication"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-parent-profile"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-teacher-home"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-teacher-report"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-teacher-coex"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-teacher-attendance"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-teacher-students"
-                    ></section>
-                    <section class="view hidden" id="view-super-home"></section>
-                    <section
-                        class="view hidden"
-                        id="view-super-approvals"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-super-students"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-super-teachers"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-super-master"
-                    ></section>
-                    <section
-                        class="view hidden"
-                        id="view-super-audit"
-                    ></section>
-                    <section class="view hidden" id="view-super-coex"></section>
-                    <section
-                        class="view hidden"
-                        id="view-super-interventions"
-                    ></section> </div
-            ></main>
-        </section>
-        <div id="modal-root"></div><div class="toast" id="toast"></div>
+    <section id="auth" class="hidden"
+      ><div class="auth-wrap"
+        ><div class="auth-card"
+          ><div class="auth-top"
+            ><div class="crest">SMK</div
+            ><h2 id="auth-title">Log masuk ibu bapa</h2
+            ><p id="auth-desc"
+              >Akses laporan dan rekod sekolah anak anda.</p
+            ></div
+          ><div class="role-tabs"
+            ><button
+              class="role-tab active"
+              data-role="parent"
+              onclick="switchRole('parent')"
+              >Ibu bapa</button
+            ><button
+              class="role-tab"
+              data-role="teacher"
+              onclick="switchRole('teacher')"
+              >Guru</button
+            ><button
+              class="role-tab"
+              data-role="super"
+              onclick="switchRole('super')"
+              >Pentadbir</button
+            ></div
+          ><form onsubmit="handleLogin(event)"
+            ><div class="field"
+              ><label id="login-label"
+                >E-mel, no. telefon atau no. kad pengenalan</label
+              ><input id="login-id" autocomplete="username" required /></div
+            ><div class="field"
+              ><label>Kata laluan</label
+              ><input
+                id="login-pass"
+                type="password"
+                autocomplete="current-password"
+                required /></div
+            ><button
+              class="btn btn-primary"
+              style="width:100%;margin-top:20px"
+              id="login-button"
+              type="submit"
+              >Masuk sebagai ibu bapa</button
+            ></form
+          ><div class="demo-box" id="demo-creds" role="note"></div
+          ><a class="back-home" href="#" onclick="backHome(event)"
+            >← Kembali ke laman sekolah</a
+          ></div
+        ></div
+      ></section
+    >
 
-        <script src="/assets/app.js?v=__ASSET_VERSION__"></script>
-    </body>
+    <section id="dashboard" class="dash hidden">
+      <aside class="sidebar" id="sidebar"
+        ><div class="dash-brand"
+          ><div class="crest">SMK</div
+          ><div class="brand-copy"
+            ><strong>SMK Bandar Tasik Kesuma</strong
+            ><span>Portal Pengurusan</span></div
+          ></div
+        >
+        <div id="nav-parent" class="nav-set hidden"
+          ><div class="nav-label">Ibu Bapa</div
+          ><a
+            href="#"
+            class="nav-link active"
+            onclick="setView('parent-home',this)"
+            ><i class="nav-icon">⌂</i><span>Dashboard anak</span></a
+          ><a href="#" class="nav-link" onclick="setView('parent-report',this)"
+            ><i class="nav-icon">▦</i><span>Laporan akademik</span></a
+          ><a href="#" class="nav-link" onclick="setView('parent-coex',this)"
+            ><i class="nav-icon">⚙</i><span>Metrik Prestasi Pelajar</span></a
+          ><a
+            href="#"
+            class="nav-link"
+            onclick="setView('parent-attendance',this)"
+            ><i class="nav-icon">◷</i><span>Kehadiran</span></a
+          ><a
+            href="#"
+            class="nav-link"
+            onclick="setView('parent-communication',this)"
+            ><i class="nav-icon">✉</i><span>Makluman & perjumpaan</span></a
+          ><a href="#" class="nav-link" onclick="setView('parent-profile',this)"
+            ><i class="nav-icon">◉</i><span>Profil keluarga</span></a
+          ></div
+        >
+        <div id="nav-teacher" class="nav-set hidden"
+          ><div class="nav-label">Guru</div
+          ><a
+            href="#"
+            class="nav-link active"
+            onclick="setView('teacher-home',this)"
+            ><i class="nav-icon">⌂</i><span>Ringkasan kelas</span></a
+          ><a href="#" class="nav-link" onclick="setView('teacher-report',this)"
+            ><i class="nav-icon">✎</i><span>Rekod laporan</span></a
+          ><a href="#" class="nav-link" onclick="setView('teacher-coex',this)"
+            ><i class="nav-icon">⚙</i><span>Rekod Prestasi Pelajar</span></a
+          ><a
+            href="#"
+            class="nav-link"
+            onclick="setView('teacher-attendance',this)"
+            ><i class="nav-icon">◷</i><span>Kehadiran harian</span></a
+          ><a
+            href="#"
+            class="nav-link"
+            onclick="setView('teacher-students',this)"
+            ><i class="nav-icon">♙</i><span>Pelajar saya</span></a
+          ></div
+        >
+        <div id="nav-super" class="nav-set hidden"
+          ><div class="nav-label">Super Admin</div
+          ><a
+            href="#"
+            class="nav-link active"
+            onclick="setView('super-home',this)"
+            ><i class="nav-icon">⌂</i><span>Operasi sekolah</span></a
+          ><a
+            href="#"
+            class="nav-link"
+            onclick="setView('super-approvals',this)"
+            ><i class="nav-icon">✓</i><span>Kelulusan laporan</span></a
+          ><a href="#" class="nav-link" onclick="setView('super-students',this)"
+            ><i class="nav-icon">♙</i><span>Pelajar & penjaga</span></a
+          ><a href="#" class="nav-link" onclick="setView('super-teachers',this)"
+            ><i class="nav-icon">◫</i><span>Akses guru</span></a
+          ><a href="#" class="nav-link" onclick="setView('super-master',this)"
+            ><i class="nav-icon">⚙</i><span>Data sekolah</span></a
+          ><a href="#" class="nav-link" onclick="setView('super-audit',this)"
+            ><i class="nav-icon">⌁</i><span>Audit & privasi</span></a
+          ><a href="#" class="nav-link" onclick="setView('super-coex',this)"
+            ><i class="nav-icon">⚙</i><span>Tetapan COEx</span></a
+          ><a
+            href="#"
+            class="nav-link"
+            onclick="setView('super-interventions',this)"
+            ><i class="nav-icon">◎</i><span>Intervensi murid</span></a
+          ></div
+        >
+        <div class="sidebar-bottom"
+          ><div class="term-card" id="term-card"
+            ><strong>Sesi Akademik 2026</strong>Penggal 1</div
+          ><button class="btn" onclick="logout()"
+            >↪ <span>Log keluar</span></button
+          ></div
+        >
+      </aside>
+      <main class="main"
+        ><header class="topbar"
+          ><button class="mobile-menu no-print" onclick="toggleSidebar()"
+            >☰</button
+          ><div
+            ><div class="crumb" id="crumb">Portal</div
+            ><h1 id="page-title">Dashboard</h1></div
+          ><div class="top-actions"
+            ><span class="pill green" id="role-pill">Portal ibu bapa</span
+            ><button
+              class="btn btn-outline btn-sm no-print"
+              id="top-action"
+              onclick="topAction()"
+              >Cetak laporan</button
+            ><div class="profile"
+              ><div class="avatar" id="profile-avatar">PN</div
+              ><div class="profile-copy"
+                ><strong id="profile-name">Puan Noraini</strong
+                ><span id="profile-role">Ibu bapa</span></div
+              ></div
+            ></div
+          ></header
+        ><div class="page">
+          <section class="view" id="view-parent-home"></section>
+          <section class="view hidden" id="view-parent-report"></section>
+          <section class="view hidden" id="view-parent-coex"></section>
+          <section class="view hidden" id="view-parent-attendance"></section>
+          <section class="view hidden" id="view-parent-communication"></section>
+          <section class="view hidden" id="view-parent-profile"></section>
+          <section class="view hidden" id="view-teacher-home"></section>
+          <section class="view hidden" id="view-teacher-report"></section>
+          <section class="view hidden" id="view-teacher-coex"></section>
+          <section class="view hidden" id="view-teacher-attendance"></section>
+          <section class="view hidden" id="view-teacher-students"></section>
+          <section class="view hidden" id="view-super-home"></section>
+          <section class="view hidden" id="view-super-approvals"></section>
+          <section class="view hidden" id="view-super-students"></section>
+          <section class="view hidden" id="view-super-teachers"></section>
+          <section class="view hidden" id="view-super-master"></section>
+          <section class="view hidden" id="view-super-audit"></section>
+          <section class="view hidden" id="view-super-coex"></section>
+          <section
+            class="view hidden"
+            id="view-super-interventions"
+          ></section> </div
+      ></main>
+    </section>
+    <div id="modal-root"></div><div class="toast" id="toast"></div>
+
+    <script src="/assets/app.js?v=__ASSET_VERSION__"></script>
+  </body>
 </html>

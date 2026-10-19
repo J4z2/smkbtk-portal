@@ -16,3 +16,7 @@ indent_size = 2
 
 [{compose,docker-compose}.{yml,yaml}]
 indent_size = 4
+
+# Portal page and assets keep the prototype's 2-space style (Prettier).
+[{public/assets/*.{js,css},resources/portal/*.html}]
+indent_size = 2
