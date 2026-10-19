@@ -33,6 +33,7 @@ Open http://127.0.0.1:8000. The demo logins are listed in [backend/README.md](ba
 
 ## Documents
 
+- [docs/STATUS.md](docs/STATUS.md): what's done, decisions made, and what's left
 - [docs/DATABASE-SCHEMA.md](docs/DATABASE-SCHEMA.md): tables, access rules and the decisions behind them
 - [docs/BACKEND-API.md](docs/BACKEND-API.md): every API endpoint and who may use it
 - [docs/FRONTEND-AUDIT.md](docs/FRONTEND-AUDIT.md): the Phase 0 audit of the v12 prototype and what was fixed
