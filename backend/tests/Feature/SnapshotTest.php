@@ -92,6 +92,7 @@ class SnapshotTest extends TestCase
         $bm = Subject::where('code', 'BM')->value('id');
         $this->actingAs($this->teacherA)->putJson("/api/students/{$this->studentA->id}/targets", ['targets' => [['subject_id' => $bm, 'target_mark' => 90]]])->assertOk();
         $this->actingAs($this->teacherB)->putJson("/api/students/{$this->studentA->id}/targets", ['targets' => [['subject_id' => $bm, 'target_mark' => 10]]])->assertForbidden();
-        $this->actingAs($this->teacherA)->getJson('/api/portal/snapshot')->assertJsonPath('students.0.coex.checkpoints.target.marks.Bahasa Melayu', 90);
+        $students = collect($this->actingAs($this->teacherA)->getJson('/api/portal/snapshot')->json('students'))->keyBy('id');
+        $this->assertSame(90, $students['S-A']['coex']['checkpoints']['target']['marks']['Bahasa Melayu']);
     }
 }

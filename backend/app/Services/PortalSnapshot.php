@@ -8,7 +8,6 @@ use App\Models\AbsenceNotice;
 use App\Models\AcademicYear;
 use App\Models\Announcement;
 use App\Models\Assessment;
-use App\Models\AttendanceRecord;
 use App\Models\AuditLog;
 use App\Models\FormSubject;
 use App\Models\Intervention;
@@ -16,12 +15,12 @@ use App\Models\PrivacyNotice;
 use App\Models\Report;
 use App\Models\SchoolClass;
 use App\Models\Setting;
-use App\Models\Student;
 use App\Models\Subject;
-use App\Models\Target;
 use App\Models\User;
 use App\Support\Access;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Builds the data object the portal page works with, in the same shape
@@ -46,21 +45,61 @@ class PortalSnapshot
         $isParent = $user->role === Role::Parent;
         $classes = SchoolClass::where('academic_year_id', $year?->id)->with('classTeacher:id,name')->orderBy('form')->orderBy('name')->get();
         $assessments = Assessment::where('academic_year_id', $year?->id)->orderBy('sort_order')->get();
-        $students = Access::students($user)
-            ->with(['currentEnrolment.schoolClass', 'guardians'])
-            ->get();
-        $studentIds = $students->pluck('id');
 
-        $reports = Report::whereIn('student_id', $studentIds)
-            ->whereIn('assessment_id', $assessments->pluck('id'))
-            ->when($isParent, fn ($q) => $q->where('status', ReportStatus::Published))
-            ->with(['marks.subject', 'assessment', 'approver:id,name'])
-            ->get()
+        // Plain rows instead of models: an admin snapshot covers the whole
+        // school (tens of thousands of marks), so memory matters.
+        $students = Access::students($user)
+            ->leftJoin('enrolments as e', fn ($j) => $j->on('e.student_id', '=', 'students.id')->where('e.is_current', true))
+            ->leftJoin('classes as c', 'c.id', '=', 'e.class_id')
+            ->orderBy('students.name')
+            ->toBase()
+            ->get(['students.id', 'students.student_no', 'students.name', 'students.gender', 'students.status', 'students.photo_path', 'c.code as class_code', 'c.form as class_form']);
+        $studentIds = $students->pluck('id')->all();
+
+        $reports = DB::table('reports')
+            ->join('assessments', 'assessments.id', '=', 'reports.assessment_id')
+            ->leftJoin('users as approver', 'approver.id', '=', 'reports.approved_by')
+            ->whereIn('reports.assessment_id', $assessments->pluck('id'))
+            ->when(! $user->isAdmin(), fn ($q) => $q->whereIn('reports.student_id', $studentIds))
+            ->when($isParent, fn ($q) => $q->where('reports.status', ReportStatus::Published->value))
+            ->get([
+                'reports.id', 'reports.student_id', 'reports.status', 'reports.teacher_comment', 'reports.support_note',
+                'reports.discipline_note', 'reports.co_score', 'reports.attendance_rate', 'reports.submitted_at',
+                'reports.approved_at', 'reports.published_at', 'reports.parent_acknowledged_at',
+                'assessments.key', 'assessments.form', 'assessments.name_ms', 'assessments.sort_order', 'approver.name as approver',
+            ]);
+        $marks = [];
+        foreach (array_chunk($reports->pluck('id')->all(), 5000) as $chunk) {
+            DB::table('marks')->join('subjects', 'subjects.id', '=', 'marks.subject_id')
+                ->whereIn('marks.report_id', $chunk)
+                ->get(['marks.report_id', 'subjects.name_ms', 'marks.mark'])
+                ->each(function ($m) use (&$marks) {
+                    $marks[$m->report_id][$m->name_ms] = $m->mark;
+                });
+        }
+        $reportsByStudent = $reports->groupBy('student_id');
+
+        $targets = DB::table('targets')->join('subjects', 'subjects.id', '=', 'targets.subject_id')
+            ->where('targets.academic_year_id', $year?->id)
+            ->when(! $user->isAdmin(), fn ($q) => $q->whereIn('targets.student_id', $studentIds))
+            ->get(['targets.student_id', 'subjects.name_ms', 'targets.target_mark'])
             ->groupBy('student_id');
-        $targets = Target::whereIn('student_id', $studentIds)->where('academic_year_id', $year?->id)->with('subject')->get()->groupBy('student_id');
-        $attendance = $user->isAdmin() ? collect() : AttendanceRecord::whereIn('student_id', $studentIds)
-            ->whereBetween('date', [$year?->starts_on, $year?->ends_on])->get()->groupBy('student_id');
+        $attendance = $user->isAdmin() ? collect() : DB::table('attendance_records')
+            ->whereIn('student_id', $studentIds)
+            ->whereBetween('date', [$year?->starts_on, $year?->ends_on])
+            ->get(['student_id', 'date', 'status', 'note'])
+            ->groupBy('student_id');
+        $guardians = DB::table('guardian_student')->join('guardians', 'guardians.id', '=', 'guardian_student.guardian_id')
+            ->when(! $user->isAdmin(), fn ($q) => $q->whereIn('guardian_student.student_id', $studentIds))
+            ->whereNull('guardians.deleted_at')
+            ->orderByDesc('guardian_student.is_primary')
+            ->get(['guardian_student.student_id', 'guardians.id', 'guardians.name', 'guardians.phone'])
+            ->groupBy('student_id');
         $subjectProfiles = $this->subjectProfiles();
+        $formSubjects = FormSubject::join('subjects', 'subjects.id', '=', 'form_subjects.subject_id')
+            ->orderBy('subjects.name_ms')->get(['form_subjects.form', 'subjects.name_ms'])
+            ->groupBy('form')->map->pluck('name_ms');
+        $currentNames = $assessments->where('is_current', true)->pluck('name_ms', 'form');
 
         return [
             'user' => ['id' => $user->id, 'name' => $user->name, 'role' => $user->role->value],
@@ -91,13 +130,16 @@ class PortalSnapshot
             ],
             'coexSettings' => $this->coexSettings(),
             'accounts' => $this->accounts($user, $classes),
-            'students' => $students->map(fn (Student $s) => $this->student(
+            'students' => $students->map(fn ($s) => $this->student(
                 $s,
-                $reports->get($s->id, collect()),
+                $reportsByStudent->get($s->id, collect()),
+                $marks,
                 $targets->get($s->id, collect()),
                 $attendance->get($s->id, collect()),
-                $assessments,
-                $isParent,
+                $guardians->get($s->id, collect())->first(),
+                $formSubjects,
+                $currentNames,
+                (string) ($year?->year ?? ''),
             ))->values(),
             'absenceRequests' => $this->absenceNotices($studentIds, $students),
             'announcements' => $this->announcements($user),
@@ -113,64 +155,58 @@ class PortalSnapshot
     }
 
     /**
-     * @param  Collection<int, Report>  $reports
-     * @param  Collection<int, Target>  $targets
-     * @param  Collection<int, AttendanceRecord>  $attendance
-     * @param  Collection<int, Assessment>  $assessments
+     * @param  Collection<int, object>  $reports
+     * @param  array<int, array<string, int|null>>  $marks
+     * @param  Collection<int, object>  $targets
+     * @param  Collection<int, object>  $attendance
+     * @param  Collection<int, Collection<int, string>>  $formSubjects
+     * @param  Collection<int, string>  $currentNames
      * @return array<string, mixed>
      */
-    private function student(Student $s, Collection $reports, Collection $targets, Collection $attendance, Collection $assessments, bool $isParent): array
+    private function student(object $s, Collection $reports, array $marks, Collection $targets, Collection $attendance, ?object $guardian, Collection $formSubjects, Collection $currentNames, string $year): array
     {
-        $class = $s->currentEnrolment?->schoolClass;
-        $form = $class?->form;
-        $byKey = $reports->filter(fn (Report $r) => $r->assessment->form === $form)->keyBy(fn (Report $r) => $r->assessment->key);
+        $form = $s->class_form !== null ? (int) $s->class_form : null;
+        $byKey = $reports->filter(fn ($r) => (int) $r->form === $form)->keyBy('key');
         $current = $byKey->get('trial');
-        $guardian = $s->guardians->sortByDesc(fn ($g) => $g->pivot->is_primary)->first();
-        $marksOf = fn (?Report $r) => $r ? $r->marks->mapWithKeys(fn ($m) => [$m->subject->name_ms => $m->mark])->all() : [];
+        $marksOf = fn ($r) => $r ? ($marks[$r->id] ?? []) : [];
+        $iso = fn ($v) => $v ? Carbon::parse($v)->toIso8601String() : null;
 
-        // Parents only receive checkpoints that are published; staff see all.
+        // Parents only receive published reports; staff see all.
         $checkpoints = [];
         foreach (self::CHECKPOINT_KEYS as $key) {
             $r = $byKey->get($key);
-            $checkpoints[$key] = ['marks' => $marksOf($r), 'status' => $r?->status->value ?? 'draft', 'apiId' => $r?->id];
+            $checkpoints[$key] = ['marks' => $marksOf($r), 'status' => $r?->status ?? 'draft', 'apiId' => $r?->id];
         }
         $checkpoints['target'] = [
-            'marks' => $targets->mapWithKeys(fn ($t) => [$t->subject->name_ms => $t->target_mark])->all(),
+            'marks' => $targets->pluck('target_mark', 'name_ms')->all(),
             'status' => 'published',
         ];
 
         $history = $byKey->except('trial')
-            ->filter(fn (Report $r) => $r->isPublished())
-            ->sortBy(fn (Report $r) => $r->assessment->sort_order)
-            ->map(fn (Report $r) => [
-                'term' => $r->assessment->name_ms,
-                'avg' => Coex::average($r->marks->pluck('mark')->all()),
-                'attendance' => $r->attendance_rate,
-            ])
+            ->filter(fn ($r) => $r->status === ReportStatus::Published->value)
+            ->sortBy('sort_order')
+            ->map(fn ($r) => ['term' => $r->name_ms, 'avg' => Coex::average(array_values($marksOf($r))), 'attendance' => $r->attendance_rate])
             ->filter(fn ($h) => $h['avg'] !== null)
             ->reverse()->values()->all();
 
-        $scores = $current ? $marksOf($current) : [];
-        if (! $current && $class) {
-            // No report yet: show the class's subjects with no marks.
-            $scores = array_fill_keys($this->subjectNamesForForm($class->form), null);
-        }
+        // No report yet: show the form's subjects with no marks.
+        $scores = $current ? $marksOf($current) : ($form ? array_fill_keys($formSubjects->get($form, collect())->all(), null) : []);
 
         return [
             'id' => $s->student_no,
             'apiId' => $s->id,
             'name' => $s->name,
-            'classId' => $class?->code,
+            'classId' => $s->class_code,
             'guardianId' => $guardian ? 'G'.$guardian->id : null,
             'guardianApiId' => $guardian?->id,
             'guardian' => $guardian?->name ?? '',
             'guardianPhone' => $guardian?->phone ?? '',
             'photo' => '',
             'hasPhoto' => $s->photo_path !== null,
-            'status' => $s->status->value === 'active' ? 'active' : 'archived',
+            'status' => $s->status === 'active' ? 'active' : 'archived',
             'gender' => $s->gender === 'P' ? 'Perempuan' : 'Lelaki',
-            'attendanceEntries' => $attendance->mapWithKeys(fn ($a) => [$a->date->toDateString() => $a->status->value])->all(),
-            'attendanceNotes' => $attendance->filter(fn ($a) => $a->note)->mapWithKeys(fn ($a) => [$a->date->toDateString() => $a->note])->all(),
+            'attendanceEntries' => $attendance->mapWithKeys(fn ($a) => [substr($a->date, 0, 10) => $a->status])->all(),
+            'attendanceNotes' => $attendance->filter(fn ($a) => $a->note)->mapWithKeys(fn ($a) => [substr($a->date, 0, 10) => $a->note])->all(),
             'scores' => $scores,
             'co' => $current?->co_score ?? 0,
             'activities' => [],
@@ -179,18 +215,18 @@ class PortalSnapshot
             'support' => $current?->support_note ?? '',
             'report' => [
                 'apiId' => $current?->id,
-                'session' => (string) ($current?->assessment->academicYear->year ?? AcademicYear::current()?->year),
-                'term' => $current?->assessment->name_ms ?? $this->currentCheckpointName($assessments->where('form', $form)),
-                'status' => $current?->status->value ?? 'draft',
-                'submittedAt' => $current?->submitted_at?->toIso8601String(),
-                'approvedAt' => $current?->approved_at?->toIso8601String(),
-                'publishedAt' => $current?->published_at?->toIso8601String(),
-                'approvedBy' => $current?->approver?->name ?? '',
+                'session' => $year,
+                'term' => $current?->name_ms ?? ($currentNames[$form] ?? ''),
+                'status' => $current?->status ?? 'draft',
+                'submittedAt' => $iso($current?->submitted_at),
+                'approvedAt' => $iso($current?->approved_at),
+                'publishedAt' => $iso($current?->published_at),
+                'approvedBy' => $current?->approver ?? '',
             ],
             'history' => $history,
             'coex' => [
                 'checkpoints' => $checkpoints,
-                'parentAcknowledgedAt' => $current?->parent_acknowledged_at?->toIso8601String(),
+                'parentAcknowledgedAt' => $iso($current?->parent_acknowledged_at),
                 'counsellorNotes' => [],
             ],
         ];
@@ -208,14 +244,6 @@ class PortalSnapshot
         }
 
         return $out;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function subjectNamesForForm(int $form): array
-    {
-        return FormSubject::where('form', $form)->with('subject')->get()->pluck('subject.name_ms')->sort()->values()->all();
     }
 
     private function band(int $form): string
@@ -303,11 +331,11 @@ class PortalSnapshot
     }
 
     /**
-     * @param  Collection<int, int>  $studentIds
-     * @param  Collection<int, Student>  $students
+     * @param  array<int, int>  $studentIds
+     * @param  Collection<int, object>  $students
      * @return array<int, array<string, mixed>>
      */
-    private function absenceNotices(Collection $studentIds, Collection $students): array
+    private function absenceNotices(array $studentIds, Collection $students): array
     {
         $numbers = $students->pluck('student_no', 'id');
         $reasons = ['keluarga' => 'Urusan keluarga', 'kesihatan' => 'Rawatan kesihatan', 'mc' => 'MC / sijil sakit', 'lain' => 'Lain-lain'];
@@ -342,11 +370,11 @@ class PortalSnapshot
     }
 
     /**
-     * @param  Collection<int, int>  $studentIds
-     * @param  Collection<int, Student>  $students
+     * @param  array<int, int>  $studentIds
+     * @param  Collection<int, object>  $students
      * @return array<int, array<string, mixed>>
      */
-    private function interventions(Collection $studentIds, Collection $students): array
+    private function interventions(array $studentIds, Collection $students): array
     {
         $numbers = $students->pluck('student_no', 'id');
 
