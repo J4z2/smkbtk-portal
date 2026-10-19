@@ -1,3 +1,5 @@
+> **Historical.** This describes the original browser-only v12 prototype. The portal now runs on the Laravel backend; see the [README](../README.md).
+
 # Source, assets and prototype notes
 
 ## Source provenance

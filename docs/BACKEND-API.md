@@ -14,6 +14,7 @@ Roles: **P** parent, **T** class teacher, **A** admin, **S** super admin.
 | POST | `/password` | all | `{current_password, password, password_confirmation}` (8+ chars, letters and numbers) |
 | GET | `/privacy-notice` | all | Current published notice, or `null` |
 | POST | `/privacy-notice/accept` | P | |
+| GET | `/public/school` | anyone | Name, address, phone for the landing page |
 
 Every endpoint below returns `403` with `code` = `password_change_required`, `consent_required` (parents) or `account_inactive` until the account is ready.
 
@@ -21,6 +22,7 @@ Every endpoint below returns `403` with `code` = `password_change_required`, `co
 
 | Method | Path | Who | Notes |
 |---|---|---|---|
+| GET | `/portal/snapshot` | all | Everything the portal page shows, in the page's own data shape, filtered by role |
 | GET | `/bootstrap` | all | School details, COEx rules and thresholds, subjects, this year's checkpoints, and classes (staff: own class; admin: all) |
 | GET | `/students` | all | P: own children. T: own class. A/S: all. Filters: `class_id`, `status`, `q`. 100 per page |
 | GET | `/students/{id}` | all | Sensitive fields (IC, race, religion, citizenship) only for T (own class) and A/S. Guardians only for staff |
@@ -42,6 +44,7 @@ Every endpoint below returns `403` with `code` = `password_change_required`, `co
 | GET, PUT | `/classes/{id}/attendance?date=` | PUT `{date, records: [{student_id, status, note}]}`. No future dates |
 | POST | `/absence-notices/{id}/review` | `{status: acknowledged | rejected}` |
 | GET, POST | `/interventions`, `/interventions/{id}/resolve` | |
+| PUT | `/students/{id}/targets` | `{targets: [{subject_id, target_mark}]}`; `null` removes a target |
 | GET | `/analytics/grades?subject_id=&assessment_key=&form=` | Grade counts and averages, overall and per form |
 | POST | `/classes/{id}/parent-accounts` | Logins for guardians without one; returns printable slips with one-time passwords |
 | POST | `/guardians/{id}/reset-password` | New one-time password (creates the login if missing) |
@@ -55,6 +58,10 @@ Every endpoint below returns `403` with `code` = `password_change_required`, `co
 | POST, PATCH | `/students`, `/students/{id}` | A, S | Create needs `class_id`; `student_no` generated if blank |
 | POST | `/students/{id}/move`, `/status`, `/photo` | A, S | Move needs a `reason` |
 | POST, PATCH | `/announcements` | A, S | |
+| POST, PATCH, DELETE | `/admin/classes`, `/admin/classes/{id}` | A, S | Code, name, form, session, DLP, `class_teacher_id` (one class per teacher per year). Delete only if empty |
+| POST | `/admin/subjects`, `/admin/subjects/{id}/remove` | A, S | `{name_ms, band}` / `{band}`; band is `lower`, `upper`, `form6` or `all`. Removing keeps existing marks |
+| GET | `/admin/privacy-notice` | A, S | Latest notice (draft or published) |
+| POST | `/admin/privacy-notice/publish` | S | After this, parents must accept it |
 | PATCH | `/admin/assessments/{id}` | A, S | Name, `exam_date`, `is_open`, `is_current` |
 | GET | `/admin/audit-logs` | A, S | Filter `q` (user name), `action` |
 | GET, POST | `/admin/imports`, `/admin/imports/students` | A, S | CSV upload; returns skipped rows with reasons |

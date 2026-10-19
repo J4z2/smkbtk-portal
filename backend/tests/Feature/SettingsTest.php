@@ -40,4 +40,13 @@ class SettingsTest extends TestCase
         $this->actingAs($this->superAdmin)->putJson('/api/admin/settings/school', ['name' => 'SMK Bandar Tasik Kesuma', 'phone' => '06-000 0000'])->assertOk();
         $this->actingAs($this->parent)->getJson('/api/bootstrap')->assertJsonPath('school.phone', '06-000 0000')->assertJsonCount(0, 'classes');
     }
+
+    public function test_only_super_admin_publishes_privacy_notice(): void
+    {
+        $this->actingAs($this->admin)->postJson('/api/admin/privacy-notice/publish')->assertForbidden();
+        $this->actingAs($this->superAdmin)->getJson('/api/admin/privacy-notice')->assertOk()->assertJsonPath('published_at', null);
+        $this->postJson('/api/admin/privacy-notice/publish')->assertOk();
+        $this->postJson('/api/admin/privacy-notice/publish')->assertStatus(422);
+        $this->actingAs($this->parent)->getJson('/api/bootstrap')->assertJsonPath('code', 'consent_required');
+    }
 }

@@ -45,6 +45,7 @@ class AuditText
         'subject.removed' => 'Membuang subjek daripada tingkatan.',
         'import.students' => 'Mengimport data pelajar.',
         'targets.updated' => 'Mengemas kini sasaran subjek.',
+        'privacy_notice.published' => 'Menerbitkan notis privasi.',
     ];
 
     public static function describe(AuditLog $log): string

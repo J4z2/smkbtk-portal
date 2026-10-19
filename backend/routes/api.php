@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\AuditLogController;
 use App\Http\Controllers\Api\Admin\ClassController;
 use App\Http\Controllers\Api\Admin\ImportController;
 use App\Http\Controllers\Api\Admin\ParentAccountController;
+use App\Http\Controllers\Api\Admin\PrivacyNoticeController;
 use App\Http\Controllers\Api\Admin\SettingsController;
 use App\Http\Controllers\Api\Admin\SubjectController;
 use App\Http\Controllers\Api\Admin\UserController;
@@ -85,6 +86,8 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('admin')->group(function () {
             Route::put('settings/school', [SettingsController::class, 'updateSchool']);
+            Route::get('privacy-notice', [PrivacyNoticeController::class, 'latest']);
+            Route::post('privacy-notice/publish', [PrivacyNoticeController::class, 'publish']);
             Route::put('settings/coex', [SettingsController::class, 'updateCoex']);
             Route::get('users', [UserController::class, 'index']);
             Route::post('users', [UserController::class, 'store']);

@@ -1,3 +1,5 @@
+> **Historical.** This describes the original browser-only v12 prototype. The portal now runs on the Laravel backend; see the [README](../README.md).
+
 # Packaging verification
 
 Verified on 29 September 2026 against the original v12 file identified in PROTOTYPE-NOTES.md.
