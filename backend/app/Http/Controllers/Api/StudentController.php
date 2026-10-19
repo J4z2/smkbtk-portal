@@ -8,9 +8,11 @@ use App\Http\Resources\StudentResource;
 use App\Models\AcademicYear;
 use App\Models\AuditLog;
 use App\Models\Enrolment;
+use App\Models\Guardian;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Support\Access;
+use App\Support\Identity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -60,7 +62,8 @@ class StudentController extends Controller
             $student->setIc($data['ic'] ?? null);
             $student->save();
             $this->enrol($student, SchoolClass::findOrFail($data['class_id']));
-            AuditLog::record('student.created', $student, null, $request->except('ic'));
+            $this->linkGuardian($student, $data);
+            AuditLog::record('student.created', $student, null, $request->except(['ic', 'guardian_ic']));
 
             return $student;
         });
@@ -78,7 +81,8 @@ class StudentController extends Controller
             $student->setIc($data['ic']);
         }
         $student->save();
-        AuditLog::record('student.updated', $student, $old, collect($data)->except('ic')->all());
+        $this->linkGuardian($student, $data);
+        AuditLog::record('student.updated', $student, $old, collect($data)->except(['ic', 'guardian_ic'])->all());
 
         return new StudentResource($student->load(['currentEnrolment.schoolClass', 'guardians']));
     }
@@ -139,6 +143,37 @@ class StudentController extends Controller
         return Storage::disk('local')->response($student->photo_path, null, ['Cache-Control' => 'private, max-age=3600']);
     }
 
+    /**
+     * Create or update the primary guardian from the student form.
+     * An existing guardian with the same IC is reused (siblings).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function linkGuardian(Student $student, array $data): void
+    {
+        if (empty($data['guardian_name'])) {
+            return;
+        }
+        $icHash = Identity::hashIc($data['guardian_ic'] ?? null);
+        $guardian = ($icHash ? Guardian::where('ic_hash', $icHash)->first() : null)
+            ?? $student->guardians()->wherePivot('is_primary', true)->first()
+            ?? new Guardian;
+        $guardian->name = $data['guardian_name'];
+        if (array_key_exists('guardian_phone', $data)) {
+            $guardian->phone = Identity::normalizePhone($data['guardian_phone']);
+        }
+        if ($icHash) {
+            $guardian->setIc($data['guardian_ic']);
+        }
+        $guardian->save();
+        $student->guardians()->wherePivot('is_primary', true)->where('guardians.id', '!=', $guardian->id)
+            ->each(fn ($g) => $student->guardians()->updateExistingPivot($g->id, ['is_primary' => false]));
+        $student->guardians()->syncWithoutDetaching([$guardian->id => [
+            'relationship' => $data['guardian_relationship'] ?? 'penjaga',
+            'is_primary' => true,
+        ]]);
+    }
+
     private function enrol(Student $student, SchoolClass $class): void
     {
         Enrolment::where('student_id', $student->id)->where('is_current', true)
@@ -182,6 +217,10 @@ class StudentController extends Controller
             'is_citizen' => ['sometimes', 'boolean'],
             'enrolled_on' => ['nullable', 'date'],
             'class_id' => [$creating ? 'required' : 'prohibited', 'integer', 'exists:classes,id'],
+            'guardian_name' => ['nullable', 'string', 'max:150'],
+            'guardian_phone' => ['nullable', 'string', 'max:20'],
+            'guardian_ic' => ['nullable', 'string', 'max:20'],
+            'guardian_relationship' => ['nullable', Rule::in(['bapa', 'ibu', 'penjaga'])],
         ]);
     }
 }

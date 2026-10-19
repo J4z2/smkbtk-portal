@@ -19,6 +19,16 @@ class Student extends Model
 {
     use SoftDeletes;
 
+    /**
+     * Same defaults as the database, so new models have them before a reload.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'active',
+        'is_citizen' => true,
+    ];
+
     protected function casts(): array
     {
         return [

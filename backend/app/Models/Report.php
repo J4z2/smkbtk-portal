@@ -37,6 +37,11 @@ class Report extends Model
         return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
     public function marks(): HasMany
     {
         return $this->hasMany(Mark::class);

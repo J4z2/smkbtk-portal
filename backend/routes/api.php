@@ -4,17 +4,21 @@ use App\Http\Controllers\Api\AbsenceNoticeController;
 use App\Http\Controllers\Api\Admin\AnalyticsController;
 use App\Http\Controllers\Api\Admin\AssessmentController;
 use App\Http\Controllers\Api\Admin\AuditLogController;
+use App\Http\Controllers\Api\Admin\ClassController;
 use App\Http\Controllers\Api\Admin\ImportController;
 use App\Http\Controllers\Api\Admin\ParentAccountController;
 use App\Http\Controllers\Api\Admin\SettingsController;
+use App\Http\Controllers\Api\Admin\SubjectController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BootstrapController;
 use App\Http\Controllers\Api\InterventionController;
+use App\Http\Controllers\Api\PortalController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\TargetController;
 use App\Http\Middleware\EnsureAccountReady;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('login', [AuthController::class, 'login']);
+Route::get('public/school', [PortalController::class, 'school']);
 
 Route::middleware('auth')->group(function () {
     // Allowed before the account is ready (password change, consent).
@@ -35,6 +40,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(EnsureAccountReady::class)->group(function () {
         Route::get('bootstrap', BootstrapController::class);
+        Route::get('portal/snapshot', [PortalController::class, 'snapshot']);
 
         Route::get('students', [StudentController::class, 'index']);
         Route::post('students', [StudentController::class, 'store']);
@@ -46,6 +52,7 @@ Route::middleware('auth')->group(function () {
         Route::post('students/{student}/photo', [StudentController::class, 'uploadPhoto']);
         Route::get('students/{student}/reports', [ReportController::class, 'forStudent']);
         Route::get('students/{student}/attendance', [AttendanceController::class, 'studentMonth']);
+        Route::put('students/{student}/targets', [TargetController::class, 'update']);
 
         Route::get('classes/{class}/reports', [ReportController::class, 'forClass']);
         Route::post('classes/{class}/reports/bulk', [ReportController::class, 'bulk']);
@@ -84,6 +91,11 @@ Route::middleware('auth')->group(function () {
             Route::patch('users/{user}', [UserController::class, 'update']);
             Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword']);
             Route::patch('assessments/{assessment}', [AssessmentController::class, 'update']);
+            Route::post('classes', [ClassController::class, 'store']);
+            Route::patch('classes/{class}', [ClassController::class, 'update']);
+            Route::delete('classes/{class}', [ClassController::class, 'destroy']);
+            Route::post('subjects', [SubjectController::class, 'store']);
+            Route::post('subjects/{subject}/remove', [SubjectController::class, 'removeFromBand']);
             Route::get('audit-logs', [AuditLogController::class, 'index']);
             Route::get('imports', [ImportController::class, 'index']);
             Route::post('imports/students', [ImportController::class, 'students']);

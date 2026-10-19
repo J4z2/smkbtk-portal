@@ -22,6 +22,11 @@ class Intervention extends Model
         return $this->belongsTo(Student::class);
     }
 
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
