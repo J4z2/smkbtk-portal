@@ -3939,3 +3939,18 @@ textarea:focus-visible {
     min-width: 0;
   }
 }
+
+/* School logo (replaces the "SMK" text badge). */
+.crest-logo {
+  display: block;
+  height: 48px;
+  width: auto;
+  flex: none;
+}
+.auth-top .crest-logo {
+  height: 76px;
+  margin: 0 auto 13px;
+}
+.dash-brand .crest-logo {
+  height: 40px;
+}

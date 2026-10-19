@@ -2190,7 +2190,7 @@ function slipCardsHtml(slips) {
   return slips
     .map(
       (x) =>
-        `<div class="login-slip" style="border:1px dashed #9fb3c8;border-radius:10px;padding:12px 14px;margin-bottom:10px;break-inside:avoid"><strong>${esc(data().school.name)} · Portal</strong><div style="margin-top:6px">${esc(x.guardian || x.name)}${x.students?.length ? `<br><small>Anak: ${esc(x.students.join(", "))}</small>` : ""}</div><div style="margin-top:8px;font-size:13px">Nama pengguna: <strong>${esc(x.username || "e-mel yang didaftarkan")}</strong><br>Kata laluan sementara: <strong style="font-family:monospace;font-size:15px;letter-spacing:1px">${esc(x.one_time_password)}</strong></div><small class="muted">Tukar kata laluan semasa log masuk pertama. Laman: ${esc(location.host)}</small></div>`,
+        `<div class="login-slip" style="border:1px dashed #9fb3c8;border-radius:10px;padding:12px 14px;margin-bottom:10px;break-inside:avoid"><img src="${location.origin}/assets/logo.png" alt="" style="height:34px;float:right;margin-left:8px"><strong>${esc(data().school.name)} · Portal</strong><div style="margin-top:6px">${esc(x.guardian || x.name)}${x.students?.length ? `<br><small>Anak: ${esc(x.students.join(", "))}</small>` : ""}</div><div style="margin-top:8px;font-size:13px">Nama pengguna: <strong>${esc(x.username || "e-mel yang didaftarkan")}</strong><br>Kata laluan sementara: <strong style="font-family:monospace;font-size:15px;letter-spacing:1px">${esc(x.one_time_password)}</strong></div><small class="muted">Tukar kata laluan semasa log masuk pertama. Laman: ${esc(location.host)}</small></div>`,
     )
     .join("");
 }
