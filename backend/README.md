@@ -1,58 +1,70 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SMK Bandar Tasik Kesuma portal: backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laravel 13 + MySQL. Serves a JSON API under `/api` for the portal frontend (the HTML/CSS/JS in the repository root). Login uses the web session cookie with CSRF protection, so the frontend must be served from the same domain.
 
-## About Laravel
+Schema and decisions: [../docs/DATABASE-SCHEMA.md](../docs/DATABASE-SCHEMA.md). API list: [../docs/BACKEND-API.md](../docs/BACKEND-API.md).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP **8.3 or newer** (Laravel 13 does not run on 8.2). Composer is pinned to 8.3 features so the code also runs on 8.4.
+- MySQL 8 (or MariaDB 10.6+) with `utf8mb4`.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Local setup
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Set the `DB_*` values in `.env`, then:
 
-## Contributing
+```bash
+php artisan migrate --seed
+php artisan serve
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+`--seed` loads the reference data (COEx rules, subjects, checkpoints for 2026, draft privacy notice) and, outside production, a demo school.
 
-## Code of Conduct
+### Demo logins (local only)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Role | Login | Password |
+|---|---|---|
+| Super admin | admin@smkbtk.com | admin123 |
+| Admin | pentadbir@smkbtk.com | admin123 |
+| Class teacher, 5M | guru@smkbtk.com | guru123 |
+| Class teacher, 1A | guru.demo@smkbtk.com | guru123 |
+| Parent (2 children, Form 5) | parent@smkbtk.com, or phone 012-888 7312, or IC 800101-01-1234 | parent123 |
+| Parent (Forms 1–3) | parent.lower@smkbtk.com | parent123 |
+| Parent (Form 4) | parent.form4@smkbtk.com | parent123 |
+| Parent (Form 6) | parent.form6@smkbtk.com | parent123 |
 
-## Security Vulnerabilities
+The demo seeder refuses to run when `APP_ENV=production`.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Tests
 
-## License
+```bash
+php artisan test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This uses an in-memory SQLite database. To run the same tests on MySQL (recommended before deploying):
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=smkbtk_testing php artisan test
+```
+
+## First production login
+
+There are no demo accounts in production. Create the first super admin on the server:
+
+```bash
+php artisan portal:create-super-admin you@example.com "Your Name"
+```
+
+It prints a one-time password, which must be changed at first login.
+
+## Settings worth knowing
+
+- `IDENTITY_HASH_KEY` (in `.env`): key for the IC-number hashes used for login and sibling matching. Set it once in production and **never change it**, or IC logins stop working. If unset, `APP_KEY` is used.
+- `PORTAL_RETENTION_YEARS`: years to keep a leaver's record before anonymising (default 5).
+- Student photos and absence documents are stored in `storage/app/private`, never in the public folder.

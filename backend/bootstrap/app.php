@@ -4,15 +4,21 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            // The API shares the web session and CSRF protection with the portal page.
+            Route::middleware('web')->prefix('api')->group(base_path('routes/api.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Unauthenticated API calls get a 401 JSON response, not a redirect.
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : '/');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

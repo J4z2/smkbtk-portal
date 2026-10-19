@@ -13,12 +13,21 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('name', 150);
+            $table->enum('role', ['parent', 'class_teacher', 'admin', 'super_admin']);
+            // Login identifiers: any one of email, phone (digits only) or IC.
+            $table->string('email', 190)->nullable()->unique();
+            $table->string('phone', 20)->nullable()->unique();
+            $table->char('ic_hash', 64)->nullable()->unique();
+            $table->text('ic_encrypted')->nullable();
             $table->string('password');
+            $table->boolean('must_change_password')->default(true);
+            $table->boolean('is_active')->default(true);
+            $table->enum('locale', ['ms', 'en'])->default('ms');
+            $table->timestamp('last_login_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

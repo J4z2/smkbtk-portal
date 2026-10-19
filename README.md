@@ -67,3 +67,7 @@ A different browser, profile, folder location or local hosting origin may have a
 Use the prototype's **Reset demo** control to restore its seed records, then **reload the page** to restore the complete Tingkatan 1–6 migration. Export anything you want to keep before resetting. The existing JSON export is a snapshot; this prototype does not include JSON restore. Its separate CSV import adds student records and lists any rows it skipped.
 
 This is a frontend demonstration with browser-only login and storage. Backend services, real authentication, multi-user synchronisation and production PDF generation are outside this package. See [prototype notes](docs/PROTOTYPE-NOTES.md) for the original limitations retained during extraction and [verification](docs/VERIFICATION.md) for the checks performed.
+
+## Production backend
+
+The Laravel + MySQL backend for production is in [backend/](backend/README.md). Its database design is in [docs/DATABASE-SCHEMA.md](docs/DATABASE-SCHEMA.md) and its API in [docs/BACKEND-API.md](docs/BACKEND-API.md). Until the frontend is connected to it, this page still runs on the browser-only demo data described above.

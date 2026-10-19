@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\AbsenceNotice;
+use App\Models\SchoolClass;
+use App\Services\Coex;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // One rule set per request, loaded on first use.
+        $this->app->scoped(Coex::class);
     }
 
     /**
@@ -19,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Route::bind('class', fn (string $id) => SchoolClass::findOrFail($id));
+        Route::bind('notice', fn (string $id) => AbsenceNotice::findOrFail($id));
     }
 }
