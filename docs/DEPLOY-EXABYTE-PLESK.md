@@ -15,6 +15,8 @@ Layout used below: the GitHub repository is cloned to a folder **outside** the w
 
 Plesk menus differ a little between versions. Where a name doesn't match, look in **Websites & Domains → smkbtk.com**.
 
+**Paths:** below, `/var/www/vhosts/smkbtk.com` is the usual Plesk home folder. On the Exabyte server it is **`/home/smkbtk.com`** (check with `pwd` after logging in over SSH), so use that wherever this guide says `/var/www/vhosts/smkbtk.com`. If SSH says `chrootsh` and `/opt/plesk/php/...` doesn't exist, use plain `php` (check `php -v` shows 8.3 or newer).
+
 ## 1. PHP version
 
 Websites & Domains → smkbtk.com → **PHP** (or *PHP Settings*):
@@ -104,6 +106,10 @@ cd backend
 ```
 
 From now on, **updating = push to GitHub, then Plesk → Git → Pull updates → Deploy.**
+
+## 6b. Check debug mode is off
+
+Open `https://smkbtk.com/api/nonexistent`. It must show only a short "not found" message. If it shows `file`, `line` or `trace`, set `APP_ENV=production` and `APP_DEBUG=false` in `.env`, then run `php artisan optimize:clear && php artisan optimize`. Run those two commands after **every** `.env` change.
 
 ## 7. HTTPS
 
