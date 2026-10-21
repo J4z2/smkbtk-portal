@@ -34,7 +34,7 @@ You asked me to continue without waiting for approval, so these were decided usi
 
 ## Needs you
 
-1. **Exabyte:** check the account offers PHP 8.3 or 8.4, then follow [DEPLOY-EXABYTE.md](DEPLOY-EXABYTE.md), starting with staging.smkbtk.com.
+1. **Exabyte:** check the account offers PHP 8.3 or 8.4, then follow [DEPLOY-EXABYTE-PLESK.md](DEPLOY-EXABYTE-PLESK.md) (Plesk) or [DEPLOY-EXABYTE.md](DEPLOY-EXABYTE.md) (cPanel), starting with staging.smkbtk.com.
 2. **School spreadsheet:** when it arrives, save it as CSV with the columns in [BACKEND-API.md](BACKEND-API.md#student-csv-import-columns), or send it to me and I'll match the importer to its layout.
 3. **Privacy notice:** fill in the [placeholders] in `backend/resources/privacy/notice.ms.md` and `notice.en.md`, have the school review it, then publish it from Audit & privasi.
 4. **Open school question S2:** should a TLMS student (failed BM or Sejarah) get **0 credits** even with A's in other subjects? This is the current behaviour.
