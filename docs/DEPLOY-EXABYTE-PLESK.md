@@ -15,7 +15,7 @@ Layout used below: the GitHub repository is cloned to a folder **outside** the w
 
 Plesk menus differ a little between versions. Where a name doesn't match, look in **Websites & Domains → smkbtk.com**.
 
-**Paths:** below, `/var/www/vhosts/smkbtk.com` is the usual Plesk home folder. On the Exabyte server it is **`/home/smkbtk.com`** (check with `pwd` after logging in over SSH), so use that wherever this guide says `/var/www/vhosts/smkbtk.com`. If SSH says `chrootsh` and `/opt/plesk/php/...` doesn't exist, use plain `php` (check `php -v` shows 8.3 or newer).
+**Paths:** below, `/var/www/vhosts/smkbtk.com` is the usual Plesk home folder. On the Exabyte server it is **`/home/smkbtk.com`** (check with `pwd` after logging in over SSH), so use that wherever this guide says `/var/www/vhosts/smkbtk.com`. Over SSH, plain `php` is PHP 8.1 on Exabyte, which is too old ("Composer detected issues in your platform"). Always use the full path `/opt/plesk/php/8.3/bin/php`, the same version as the website's PHP setting.
 
 ## 1. PHP version
 
