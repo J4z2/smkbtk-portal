@@ -98,12 +98,13 @@ Never run `php artisan db:seed` on its own in production. The demo seeder refuse
 Git → the repository → **Repository settings** → turn on **Enable additional deployment actions** and paste:
 
 ```bash
-cd backend
-/opt/plesk/php/8.3/bin/php ~/composer.phar install --no-dev --optimize-autoloader --no-interaction
-/opt/plesk/php/8.3/bin/php artisan migrate --force
-/opt/plesk/php/8.3/bin/php artisan optimize:clear
-/opt/plesk/php/8.3/bin/php artisan optimize
+/opt/plesk/php/8.3/bin/php /home/smkbtk.com/composer.phar install --working-dir=backend --no-dev --optimize-autoloader --no-interaction
+/opt/plesk/php/8.3/bin/php backend/artisan migrate --force
+/opt/plesk/php/8.3/bin/php backend/artisan optimize:clear
+/opt/plesk/php/8.3/bin/php backend/artisan optimize
 ```
+
+Plesk runs each line separately from the repository folder, so a `cd backend` line would not carry over to the next line. That's why each line names `backend` itself.
 
 From now on, **updating = push to GitHub, then Plesk → Git → Pull updates → Deploy.**
 
