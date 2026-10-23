@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Guardian;
+use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -78,5 +79,15 @@ class ImportAndAccountsTest extends TestCase
         $this->actingAs($this->admin)->postJson('/api/admin/users', ['name' => 'X', 'role' => 'admin', 'email' => 'x@test.my'])->assertForbidden();
         $this->postJson('/api/admin/users', ['name' => 'Guru Baru', 'role' => 'class_teacher', 'email' => 'g@test.my'])->assertCreated()->assertJsonStructure(['one_time_password']);
         $this->actingAs($this->superAdmin)->postJson('/api/admin/users', ['name' => 'X', 'role' => 'admin', 'email' => 'x@test.my'])->assertCreated();
+    }
+
+    public function test_import_accepts_class_names_as_well_as_codes(): void
+    {
+        $year = $this->year->id;
+        SchoolClass::create(['academic_year_id' => $year, 'form' => 1, 'name' => '1 Zuhrah DLP', 'code' => '1-ZUHRAH', 'is_dlp' => true]);
+        SchoolClass::create(['academic_year_id' => $year, 'form' => 6, 'form6_stage' => 'bawah', 'name' => 'PRA U 27 UKM', 'code' => 'PRAU27-UKM']);
+
+        $csv = "Nama,Kelas,Jantina\nSatu,1 ZUHRAH,L\nDua,1 Zuhrah DLP,P\nTiga,1-zuhrah,L\nEmpat,Pra U 27 UKM,P\n";
+        $this->upload($csv)->assertOk()->assertJsonPath('rows_imported', 4)->assertJsonPath('rows_skipped', 0);
     }
 }

@@ -33,8 +33,14 @@ class StudentImporter
     public function import(string $path, string $fileName, ?int $userId): ImportBatch
     {
         $year = AcademicYear::current();
-        $this->classes = SchoolClass::where('academic_year_id', $year?->id)->get()
-            ->keyBy(fn ($c) => Str::upper($c->code))->all();
+        // A class can be given by code ("1-ANDROMEDA") or by name in any common
+        // spelling ("1 Andromeda", "1 ZUHRAH DLP", "PRA U 27 UKM").
+        $this->classes = [];
+        foreach (SchoolClass::where('academic_year_id', $year?->id)->get() as $class) {
+            foreach ([$class->code, $class->name, preg_replace('/\bDLP\b/i', '', $class->name)] as $label) {
+                $this->classes[self::classKey($label)] = $class;
+            }
+        }
 
         $batch = ImportBatch::create(['type' => 'students', 'file_name' => $fileName, 'uploaded_by' => $userId]);
         $errors = [];
@@ -81,7 +87,7 @@ class StudentImporter
     private function importRow(array $row, ?AcademicYear $year): ?string
     {
         $name = trim($row['nama'] ?? '');
-        $class = $this->classes[Str::upper(trim($row['kelas'] ?? ''))] ?? null;
+        $class = $this->classes[self::classKey($row['kelas'] ?? '')] ?? null;
         $gender = Str::upper(trim($row['jantina'] ?? ''));
         $gender = ['LELAKI' => 'L', 'PEREMPUAN' => 'P'][$gender] ?? $gender;
         $studentNo = trim($row['no_pelajar'] ?? '');
@@ -187,6 +193,11 @@ class StudentImporter
         fclose($handle);
 
         return $rows;
+    }
+
+    private static function classKey(string $label): string
+    {
+        return preg_replace('/[^A-Z0-9]/', '', Str::upper($label));
     }
 
     private function pick(string $value, array $allowed): ?string

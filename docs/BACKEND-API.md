@@ -76,7 +76,7 @@ Every endpoint below returns `403` with `code` = `password_change_required`, `co
 
 ## Student CSV import columns
 
-Header row required; Malay headings, any order. Required: `nama`, `kelas` (class code), `jantina` (L/P or Lelaki/Perempuan).
+Header row required; Malay headings, any order. Required: `nama`, `kelas` (class code like `1-ANDROMEDA`, or the class name in any spelling: `1 Andromeda`, `1 ZUHRAH DLP`, `PRA U 27 UKM`), `jantina` (L/P or Lelaki/Perempuan).
 Optional: `no_pelajar`, `ic`, `tarikh_lahir` (YYYY-MM-DD or DD/MM/YYYY), `kaum`, `agama`, `warganegara` (Y/N), `penjaga`, `ic_penjaga`, `telefon_penjaga`, `emel_penjaga`, `hubungan` (bapa/ibu/penjaga).
 
 Students are matched by `no_pelajar`, then IC, and updated. Guardians are matched by IC, so siblings share one guardian and one login. Excel files: save as CSV (UTF-8) first.
